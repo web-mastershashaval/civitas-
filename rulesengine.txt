@@ -1,0 +1,529 @@
+CIVITAS — RULES ENGINE (MVP)
+1. What the Rules Engine IS (clear definition)
+
+The Civitas Rules Engine is a policy execution layer that:
+
+Defines what actions are allowed
+
+Under which conditions
+
+For which role
+
+In which scope
+
+With which limits
+
+And what happens when limits are reached
+
+👉 It runs before every write action (post, response, endorse, challenge, etc.).
+
+2. Core Concepts (Do NOT skip)
+A. Scope Hierarchy (Hard Constraint)
+
+Rules are always evaluated in this order:
+
+Platform
+ └── Community
+      └── Board
+           └── Sub-Board
+                └── Discussion
+
+
+Lower levels can restrict, never loosen, higher levels.
+
+B. Roles (MVP)
+- Member
+- Facilitator
+- Co-Facilitator
+- System (implicit)
+
+
+⚠️ Facilitators are NOT admins.
+They cannot override system rules.
+
+3. Rule Types (MVP)
+1️⃣ Access Rules
+
+Control who can enter or act
+
+Examples:
+
+Join type: open / application / invite
+
+Posting eligibility
+
+Response eligibility
+
+2️⃣ Action Rules
+
+Control what actions are allowed
+
+Actions include:
+
+CREATE_DISCUSSION
+RESPOND
+ENDORSE
+CHALLENGE
+CLARIFY
+EDIT
+FLAG
+
+3️⃣ Rate & Limit Rules
+
+Control how often actions occur
+
+Examples:
+
+Max discussions per day
+
+Max responses per discussion
+
+Cool-down windows
+
+4️⃣ Content Structure Rules
+
+Control how content must look
+
+Examples:
+
+Response type required
+
+Sources required
+
+Title length limits
+
+5️⃣ Enforcement Rules
+
+Control what happens when violated
+
+Examples:
+
+Soft block
+
+Temporary lock
+
+Escalation to facilitator queue
+
+4. RULE DATA MODEL (Core)
+A. Rule Definition Table
+Rule {
+  id: UUID,
+  scope_type: "platform | community | board | sub_board | discussion",
+  scope_id: UUID | null,
+  action: "CREATE_DISCUSSION | RESPOND | ENDORSE | ...",
+  role: "member | facilitator",
+  conditions: {
+    "max_per_day": number?,
+    "cooldown_minutes": number?,
+    "requires_type": boolean?,
+    "allowed_types": [string]?,
+    "requires_sources": boolean?
+  },
+  enforcement: {
+    "type": "BLOCK | SOFT_BLOCK | QUEUE | LOCK",
+    "message": string
+  },
+  active: boolean
+}
+
+B. Example Rule (Real)
+{
+  "scope_type": "sub_board",
+  "scope_id": "rent-control-research",
+  "action": "CREATE_DISCUSSION",
+  "role": "member",
+  "conditions": {
+    "max_per_day": 1,
+    "requires_type": true,
+    "allowed_types": ["Evidence", "Question"]
+  },
+  "enforcement": {
+    "type": "BLOCK",
+    "message": "This sub-board allows one evidence-based discussion per day."
+  },
+  "active": true
+}
+
+5. Runtime Evaluation Flow (VERY IMPORTANT)
+
+Every action goes through this pipeline:
+
+User Action
+ ↓
+Resolve Scope Chain
+ ↓
+Fetch Applicable Rules
+ ↓
+Merge Rules (most restrictive wins)
+ ↓
+Evaluate Conditions
+ ↓
+Allow OR Enforce
+ ↓
+Log Decision
+
+
+No exceptions.
+
+6. Rule Resolution Logic (Deterministic)
+Priority Order
+
+Discussion-level rule
+
+Sub-board rule
+
+Board rule
+
+Community rule
+
+Platform rule
+
+Conflict Resolution
+
+Deny > Allow
+
+Lower limits win
+
+More specific scope wins
+
+7. Enforcement Outcomes (MVP)
+BLOCK
+
+Action denied
+
+Message shown
+
+SOFT_BLOCK
+
+Button disabled
+
+Tooltip explanation
+
+QUEUE
+
+Action submitted for facilitator review
+
+LOCK
+
+Temporarily disables action in that scope
+
+8. Example: Member Posting a Response
+
+Scenario:
+
+Member clicks “Submit Response”
+
+System checks:
+
+Is RESPOND allowed for role?
+
+Is response type required?
+
+Has member exceeded limit?
+
+Is discussion locked?
+
+Is response length valid?
+
+Outcome:
+
+Allow → Save
+
+Deny → Show rule message
+
+Queue → Notify facilitator
+
+9. Facilitator Interaction with Rules
+
+Facilitators can:
+
+Enable / disable predefined rules
+
+Adjust numeric limits
+
+Select allowed response types
+
+They cannot:
+
+Edit enforcement logic
+
+Create custom loopholes
+
+Override past decisions
+
+10. Audit & Transparency (Grant-Critical)
+
+Every evaluation produces a log:
+
+RuleDecision {
+  user_id,
+  action,
+  scope,
+  result: "allowed | blocked | queued",
+  rule_id,
+  timestamp
+}
+
+
+This enables:
+
+Appeals
+
+Trust
+
+Research
+
+Reporting
+
+11. What We DELIBERATELY Did NOT Include (MVP)
+
+❌ AI moderation
+❌ Reputation scores affecting permissions
+❌ Manual moderator overrides
+❌ Shadow bans
+❌ Voting-based punishment
+
+Those come later, if ever.
+
+12. Why This Rules Engine Is STRONG
+
+Predictable
+
+Explainable
+
+Scalable
+
+Legally safer
+
+Human-respecting
+
+Hard to game
+
+This is not social media moderation.
+This is software-enforced governance.
+
+1. Is the rules engine you saw “complete”?
+✅ For an MVP: YES
+
+You can build, launch, govern communities, and defend this in a grant review.
+
+But a production-grade civic platform needs one more layer you correctly hinted at:
+
+Platform-level (constitutional) rules
+
+These are non-negotiable, system-owned rules that no community can change.
+
+2. You need TWO categories of rules (this is key)
+🔒 A. PLATFORM (CONSTITUTIONAL) RULES
+
+Hard-coded or system-owned
+
+These protect:
+
+The platform
+
+The mission
+
+Users’ rights
+
+Legal safety
+
+Communities cannot disable or override these.
+
+🔓 B. COMMUNITY / BOARD RULES
+
+Configurable within limits
+
+These allow:
+
+Contextual governance
+
+Different cultures
+
+Different discussion rigor
+
+But they must operate inside the platform rules.
+
+3. PLATFORM-LEVEL RULES (YOU MUST ADD THESE)
+
+These rules are evaluated first and always win.
+
+3.1 Identity & Integrity Rules
+
+Purpose: prevent abuse, bots, manipulation.
+
+Examples:
+
+One account = one human (basic checks)
+
+No impersonation
+
+No duplicate communities with same purpose
+
+No automated posting
+
+System behavior:
+
+Immediate BLOCK
+
+Account restriction
+
+Permanent audit trail
+
+3.2 Safety & Harm Rules
+
+Purpose: legal and ethical protection.
+
+Examples:
+
+No incitement to violence
+
+No doxxing
+
+No targeted harassment
+
+No hate content (baseline definitions)
+
+⚠️ These are NOT community-defined.
+
+3.3 Democratic Fairness Rules
+
+Purpose: prevent power capture.
+
+Examples:
+
+Facilitators cannot delete opposing viewpoints
+
+Facilitators cannot edit member content
+
+No shadow banning
+
+No silent removals (everything must show a reason)
+
+3.4 Transparency Rules
+
+Purpose: trust and legitimacy.
+
+Examples:
+
+Every moderation action must:
+
+reference a rule
+
+generate a visible reason
+
+Members can see:
+
+why their action was blocked
+
+which rule applied
+
+3.5 Rate Abuse Protection
+
+Purpose: system stability.
+
+Examples:
+
+Hard upper limits per hour/day
+
+Spam detection thresholds
+
+Flood protection
+
+These override community generosity.
+
+4. How PLATFORM rules differ technically
+Platform Rules are:
+
+scope_type = platform
+
+editable = false
+
+enforcement = BLOCK | LOCK
+
+Owned by System
+
+Example:
+
+{
+  "scope_type": "platform",
+  "action": "CREATE_DISCUSSION",
+  "role": "member",
+  "conditions": {
+    "max_per_hour": 5
+  },
+  "enforcement": {
+    "type": "BLOCK",
+    "message": "Platform posting limit reached."
+  },
+  "editable": false
+}
+
+5. Do we need more rule TYPES?
+MVP Rule Types (Final)
+
+You now have 6 (this is enough):
+
+Access rules
+
+Action rules
+
+Rate & limit rules
+
+Content structure rules
+
+Enforcement rules
+
+Constitutional platform rules ✅ (new)
+
+Anything beyond this is phase 2.
+
+6. Rules we are EXPLICITLY NOT adding (yet)
+
+These are advanced and should NOT be in MVP:
+
+❌ Reputation-weighted permissions
+❌ AI auto-removal
+❌ Hidden trust scores
+❌ Algorithmic suppression
+❌ Community voting to silence users
+
+Grant reviewers LOVE this restraint.
+
+7. Final Architecture (simple mental model)
+PLATFORM CONSTITUTION (immutable)
+        ↓
+Community Governance (configurable)
+        ↓
+Board Discipline
+        ↓
+Discussion Rules
+
+
+Everything flows downward.
+Nothing flows upward.
+
+8. So what remains to “add”?
+
+Only one thing, conceptually:
+
+A Platform Rule Registry
+(preloaded, immutable, audited)
+
+Technically:
+
+Same engine
+
+Same evaluator
+
+Different ownership + permissions
+
+9. Verdict (very important)
+
+✔ You do not need a second rules engine
+✔ You do not need AI moderation
+✔ You do not need complex reputation systems
+
+You only needed to separate constitutional rules from configurable ones.
+
+Now you have a governable, defensible platform.

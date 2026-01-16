@@ -1,0 +1,775 @@
+CIVITAS — COMPLETE UI FLOW (MVP)
+
+I’ll break it into phases, then list each screen in order, with:
+
+Purpose
+
+Who sees it
+
+What actions are allowed
+
+Why it exists (governance reason)
+
+PHASE 0 — ENTRY & ROLE SELECTION
+SCREEN 0.1 — Landing Page
+
+Who: Everyone
+Purpose: Explain what Civitas is (not marketing fluff)
+
+Key Elements:
+
+Short value statement: “Governed communities, not social feeds”
+
+Two primary buttons:
+
+Join as Member
+
+Create / Facilitate a Community
+
+No login wall yet
+
+Why:
+Role clarity from the first second. No confusion later.
+
+PHASE 1 — AUTHENTICATION & ONBOARDING
+SCREEN 1.1 — Sign Up / Sign In
+
+Who: All users
+Actions:
+
+Email + password
+
+Optional SSO (later)
+
+SCREEN 1.2 — Role Confirmation
+
+Who: New users
+Actions:
+
+Confirm:
+
+Member
+
+Facilitator
+
+Explanation of responsibilities (very short)
+
+⚠️ Roles are not equal. This is explicit.
+
+SCREEN 1.3 — Governance Orientation (Mandatory)
+
+Who: Both (slightly different copy)
+
+Content:
+
+What Civitas is NOT (no free chat, no likes, no virality)
+
+How rules work
+
+What happens when rules are violated
+
+One checkbox: “I understand Civitas is rule-governed”
+
+✔ Shown once, not every time.
+
+PHASE 2 — MEMBER FLOW
+SCREEN 2.1 — Member Home
+
+Who: Members only
+Purpose: Discovery + belonging
+
+Layout:
+
+Left icon-based navigation:
+
+🏠 Home
+
+🧭 Communities
+
+🔔 Notifications
+
+👤 Profile
+
+Main content:
+
+Communities you belong to
+
+Recommended communities (curated, not algorithmic)
+
+No:
+
+No “Create Community”
+
+No global posting
+
+SCREEN 2.2 — Community Directory
+
+Who: Members
+Actions:
+
+Browse communities
+
+Filter by:
+
+Topic
+
+Access type (Open / Application / Invite)
+
+Each community card shows:
+
+Name
+
+Purpose
+
+Governance strictness indicator
+
+SCREEN 2.3 — Community Profile (Public View)
+
+Who: Members (not yet joined)
+
+Shows:
+
+Community purpose
+
+Governance summary
+
+Boards overview (read-only)
+
+Facilitators listed
+
+CTA depends on access type:
+
+Join
+
+Apply
+
+Request Invite
+
+SCREEN 2.4 — Application to Join (If Required)
+
+Who: Members
+
+Structure:
+
+Short questions defined by facilitator
+
+Agreement to community-specific rules
+
+Submit → Await review
+
+PHASE 3 — INSIDE A COMMUNITY (MEMBER)
+SCREEN 3.1 — Community Home
+
+Who: Members (approved)
+
+Layout:
+
+Community header (purpose + rules link)
+
+List of Boards
+
+Boards = domains / areas of discussion (A)
+
+SCREEN 3.2 — Board View
+
+Who: Members
+Purpose: Narrow scope
+
+Shows:
+
+Board description
+
+List of Sub-Boards
+
+No posting yet.
+
+SCREEN 3.3 — Sub-Board View (SCREEN 6)
+
+Who: Members
+Purpose: Actual discussion space
+
+Shows:
+
+Scope definition (very clear)
+
+Existing discussions
+
+Contribute button (only here)
+
+SCREEN 3.4 — Contribute / Create Discussion (SCREEN 7)
+
+Who: Members
+
+Structured form:
+
+Discussion type (Evidence, Question, Insight)
+
+Title
+
+Body (scoped)
+
+Sources (if required)
+
+No free posting anywhere else.
+
+SCREEN 3.5 — Discussion Detail (SCREEN 8)
+
+Who: Members
+
+Shows:
+
+Original contribution
+
+Sources
+
+Interaction bar:
+
+Endorse
+
+Challenge
+
+Clarify
+
+Follow
+
+Responses (typed & categorized)
+
+PHASE 4 — INTERACTION & GOVERNANCE
+SCREEN 4.1 — System Nudges (Invisible Screen)
+
+Who: Members
+Examples:
+
+Rate limits
+
+Contribution limits
+
+Temporary locks
+
+No public shaming. No popups every time.
+
+PHASE 5 — FACILITATOR FLOW
+SCREEN 5.1 — Facilitator Home
+
+Who: Facilitators
+
+Navigation:
+
+🏠 Overview
+
+🧩 Communities
+
+📋 Moderation
+
+👥 Members
+
+⚙️ Rules
+
+SCREEN 5.2 — Create Community
+
+Who: Facilitators
+
+Steps:
+
+Name & purpose
+
+Access type
+
+Governance strictness
+
+Default rules
+
+Boards setup
+
+SCREEN 5.3 — Community Management Dashboard
+
+Who: Facilitators
+
+Can:
+
+Edit boards & sub-boards
+
+Assign co-facilitators
+
+View health indicators
+
+SCREEN 5.4 — Moderation Panel (SCREEN 9)
+
+Who: Facilitators
+
+Can:
+
+Pause discussions
+
+Restrict response types
+
+Resolve flags
+
+Highlight quality
+
+Cannot:
+
+Bend rules
+
+Act invisibly
+
+Override system limits
+
+PHASE 6 — PROFILE & SETTINGS
+SCREEN 6.1 — Member Profile
+
+Who: Members
+
+Shows:
+
+Communities
+
+Contributions
+
+Reputation (non-gamified)
+
+SCREEN 6.2 — Facilitator Profile
+
+Who: Facilitators
+
+Shows:
+
+Communities facilitated
+
+Governance style
+
+Public accountability
+
+FINAL TRUTH (Important)
+
+This flow:
+
+Is slower than social media
+
+Is safer than social media
+
+Is clearer than Discord/Slack
+
+Is grant-defensible
+
+Is buildable as an MVP
+
+You now have:
+✔ A complete UI flow
+✔ Role separation
+✔ Governance-first design
+✔ No contradictions
+
+Next options (you choose):
+
+Turn this into wireframes (screens 0–9)
+
+Turn this into a frontend folder structure
+
+Turn this into a product spec document
+
+Map this UI flow to Django / React routes
+
+Convert this into grant annex (technical design)
+
+Just tell me the number.
+
+what was the color or the theme that you were using in the last screens 
+
+Good question — and you’re right to lock this now before moving forward.
+
+The theme used in the last screens
+
+We were consistently using a Dark Governance / Civic Tech theme.
+
+Core identity
+
+Dark mode first
+
+Serious, institutional, calm
+
+Not playful, not social-media-like
+
+Designed for long reading and thoughtful interaction
+
+Exact Color Palette (as used)
+Backgrounds
+
+Primary background:
+#0e1117
+→ Deep charcoal / near-black (used for body background)
+
+Card / surface background:
+#161b22
+→ Slightly lighter dark surface for panels, cards, containers
+
+Text
+
+Primary text:
+#e6edf3
+→ Soft off-white (easy on eyes, not pure white)
+
+Muted / secondary text:
+#9ba3b4
+→ For metadata, timestamps, descriptions
+
+Borders & Dividers
+
+Border color:
+#222
+→ Very subtle separators, non-distracting
+
+Accent / Action Color
+
+Primary accent:
+#4f8cff
+→ Calm civic blue
+Used for:
+
+Primary buttons
+
+Links
+
+Key actions (Contribute, Submit)
+
+This blue was chosen because:
+
+Neutral
+
+Trust-oriented
+
+Non-dopamine-driven (unlike red/pink)
+
+Secondary Accents (sparingly)
+
+Teal / cyan hint:
+#7cc
+→ Used for badges (Evidence, Clarification)
+
+Warning / moderation highlight:
+#f0b429
+→ Used in facilitator tools (not member UI)
+
+Typography Style
+
+Font: system-ui stack
+(San Francisco / Segoe UI / Roboto)
+
+Medium weight
+
+No decorative fonts
+
+Clear hierarchy, not flashy
+
+Overall Theme Name (if you want to document it)
+
+You can safely call it:
+
+“Civic Dark — Governance First”
+
+or
+
+“Institutional Dark”
+
+Why this theme fits Civitas
+
+Signals seriousness
+
+Discourages impulsive behavior
+
+Comfortable for long reading
+
+Aligns with grants, policy, research, and civic communities
+
+Clearly not social media
+
+2
+
+Excellent choice.
+This is where most governance-first ideas die — because they become unreadable, intimidating, or unusable. If we get this right, CommonGround becomes usable power, not theory.
+
+I’ll be brutally practical here.
+
+UX DESIGN: WRITING RULES WITHOUT TURNING USERS INTO LAWYERS
+Core UX Principle (Non-Negotiable)
+
+Users do not write rules.
+They configure behavior.
+
+If you ask people to “write rules”, you lose 80% of them.
+
+1. The Mental Model Users Can Handle
+
+Instead of “Rules”, the UI presents:
+
+Community Behavior Settings
+
+Language matters.
+
+People understand:
+
+“What happens if someone does X?”
+Not:
+
+“Define enforcement policies”
+
+2. Rule Creation as a Guided Flow (Not a Blank Page)
+❌ What NOT to do
+
+Blank text editor
+
+Markdown rules
+
+Free-form policy writing
+
+✅ What WORKS
+
+A wizard-style builder with guardrails.
+
+3. The Rule Builder UX (Step-by-Step)
+STEP 1: Choose the Problem (Intent-Based)
+
+Instead of “Create Rule”, show:
+
+“What do you want to control?”
+
+Options (examples):
+
+Harassment & abuse
+
+Spam & promotions
+
+Off-topic posts
+
+Payments & monetization
+
+Member behavior
+
+Content quality
+
+This reduces cognitive load.
+
+STEP 2: Define the Trigger (Plain Language)
+
+Example UI:
+
+When this happens…
+
+A message is reported
+
+A new member posts
+
+A link is shared
+
+A payment is requested
+
+A rule is violated again
+
+No technical words.
+
+STEP 3: Set Conditions (Sliders & Toggles)
+
+Instead of logic, use controls:
+
+Number of reports: 2 – 10
+
+Time window: 10 min – 7 days
+
+Member age: new / established
+
+Role: any / contributor / mod
+
+Behind the scenes → logic.
+
+User sees → intent.
+
+STEP 4: Choose Consequences (Pre-Defined Only)
+
+No free-text punishments.
+
+Selectable actions:
+
+Warn user
+
+Temporarily mute (choose duration)
+
+Remove content
+
+Require review
+
+Trigger vote
+
+Escalate to next level
+
+This enforces no bending rules.
+
+STEP 5: Preview the Rule (This Is Huge)
+
+Before saving, show:
+
+“If this happens, this will occur.”
+
+Example:
+
+“If 3 members report a message for harassment within 24 hours, the message will be removed and the author muted for 48 hours.”
+
+This builds confidence and trust.
+
+4. Rule Templates (Your Secret Weapon)
+
+Most communities are not unique.
+
+You should ship opinionated templates:
+
+Professional learning group
+
+Support group
+
+Faith-based community
+
+Developer community
+
+Paid mentorship group
+
+Templates:
+
+reduce mistakes
+
+encode best practices
+
+speed onboarding
+
+⚠️ Hard truth:
+Templates shape culture.
+This is where your values sneak in — intentionally.
+
+5. Rule Complexity Is Layered (Not Dumped)
+Beginner View
+
+“Low / Medium / Strict”
+
+Simple toggles
+
+No advanced settings
+
+Advanced View
+
+Thresholds
+
+Escalation paths
+
+Voting triggers
+
+Versioning
+
+You hide power until it’s needed.
+
+6. Make Rules Feel Fair, Not Punitive
+
+UX copy matters.
+
+Avoid:
+
+“Punishment”
+
+“Penalty”
+
+“Strike”
+
+Use:
+
+“Warning”
+
+“Cooling-off”
+
+“Review”
+
+“Protection”
+
+Tone shapes community psychology.
+
+7. Versioning UX (This Builds Trust)
+
+When rules change:
+
+Members see:
+
+what changed
+
+why
+
+when it applies
+
+Must re-accept before continuing
+
+Old violations remain bound to old rules
+
+No surprises.
+
+8. Show Enforcement Visibly (Without Shaming)
+
+Example UI elements:
+
+“This message was removed under Rule R-003”
+
+“3 messages muted today for spam”
+
+“2 appeals reversed this week”
+
+Transparency without drama.
+
+9. The Biggest UX Risk (Be Honest)
+
+⚠️ Over-configuration fatigue
+
+If:
+
+setup takes too long
+
+too many decisions upfront
+
+Users quit.
+
+Solution:
+
+Default safe templates
+
+Progressive disclosure
+
+“Edit later” allowed, but enforcement only after activation
+
+10. Why This UX Is Defensible
+
+Competitors struggle because:
+
+they fear restricting admins
+
+they fear complexity
+
+they fear transparency
+
+You embrace all three.
+
+That’s your moat.
+
+11. Reality Check (I Won’t Lie)
+
+This UX will:
+
+slow onboarding by ~10–20%
+
+reduce impulsive community creation
+
+But it will:
+
+massively increase trust
+
+attract serious communities
+
+reduce moderation chaos
+
+Quality over quantity.
+
+12. Lock This Principle In (Final)
+
+If a rule cannot be explained in one sentence, it cannot be enforced.                      

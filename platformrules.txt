@@ -1,0 +1,263 @@
+🏛️ CIVITAS — PLATFORM (SYSTEM) RULES
+
+Scope: Platform-wide
+Owner: System
+Editable by communities: ❌ No
+Applies to: Everyone (Members, Facilitators, Co-facilitators, Admins)
+
+1. IDENTITY & ACCOUNT INTEGRITY RULES
+SR-1: One Human, One Account
+
+A single person may only control one active account.
+
+Duplicate or detected linked accounts are restricted or suspended.
+
+Enforcement:
+→ Account lock or merge review
+
+SR-2: No Impersonation
+
+Users may not impersonate individuals, organizations, or public entities.
+
+Community names and profiles must not falsely represent real entities.
+
+Enforcement:
+→ Immediate block + review
+
+SR-3: Authentic Profile Requirement
+
+Users must complete minimum onboarding requirements before interacting:
+
+role selection
+
+community agreement
+
+rules acknowledgment
+
+Enforcement:
+→ Action blocked until complete
+
+2. SAFETY & HARM PREVENTION RULES
+SR-4: No Violence or Incitement
+
+No content encouraging violence, threats, or physical harm.
+
+Enforcement:
+→ Immediate removal + account restriction
+
+SR-5: No Harassment or Targeted Abuse
+
+No persistent harassment, bullying, or intimidation of individuals or groups.
+
+Enforcement:
+→ Warning → restriction → suspension (escalating)
+
+SR-6: No Doxxing or Privacy Violations
+
+Sharing private or identifying information without consent is forbidden.
+
+Enforcement:
+→ Immediate removal + suspension
+
+SR-7: No Hate-Based Content
+
+No content attacking protected classes at a platform-defined baseline.
+
+Communities cannot relax this rule.
+
+Enforcement:
+→ Removal + sanctions
+
+3. DEMOCRATIC FAIRNESS & POWER LIMITS
+SR-8: No Silent Moderation
+
+Every moderation action must:
+
+reference a rule
+
+generate a visible reason to the affected user
+
+Enforcement:
+→ Action invalid if no reason is logged
+
+SR-9: Facilitators Cannot Edit Member Content
+
+Facilitators may remove or lock content
+
+They may NOT edit, rewrite, or distort member submissions
+
+Enforcement:
+→ Action blocked by system
+
+SR-10: No Arbitrary Exclusion
+
+Members cannot be removed, muted, or banned without a rule-based justification.
+
+Enforcement:
+→ Action blocked if no rule matches
+
+SR-11: Equal Rule Application
+
+Rules apply equally regardless of:
+
+popularity
+
+tenure
+
+role (except system admins)
+
+Enforcement:
+→ System-level validation
+
+4. TRANSPARENCY & AUDITABILITY RULES
+SR-12: Mandatory Rule Traceability
+
+Every system decision must log:
+
+rule ID
+
+action taken
+
+timestamp
+
+actor (system or facilitator)
+
+Enforcement:
+→ Action fails if logging fails
+
+SR-13: User Right to Explanation
+
+Users must be shown:
+
+why an action was blocked or reversed
+
+which rule was applied
+
+Enforcement:
+→ UI-level enforcement
+
+SR-14: Immutable Audit Logs
+
+Moderation and rule logs cannot be deleted or altered.
+
+Enforcement:
+→ Database-level immutability
+
+5. RATE LIMITS & ANTI-ABUSE RULES
+SR-15: Platform Posting Limits
+
+Global maximums exist for:
+
+posts
+
+comments
+
+reactions
+
+reports
+
+Communities cannot exceed platform caps.
+
+Enforcement:
+→ Temporary block with reason
+
+SR-16: No Spam or Flooding
+
+Repetitive, automated, or low-signal content is restricted.
+
+Enforcement:
+→ Throttling → temporary lock
+
+SR-17: No Automated Interaction
+
+Bots, scripts, or automation are not allowed in MVP.
+
+Enforcement:
+→ Account suspension
+
+6. CONTENT STRUCTURE & ORDER RULES
+SR-18: Structured Posting Only
+
+All contributions must:
+
+belong to a board
+
+follow the board’s structure (title, description, etc.)
+
+Enforcement:
+→ Submission blocked
+
+SR-19: No Off-Context Posting
+
+Content must match the scope of the board and community.
+
+Enforcement:
+→ Removal with explanation
+
+7. GOVERNANCE BOUNDARIES
+SR-20: Communities Cannot Override Platform Rules
+
+Any community rule conflicting with system rules is invalid.
+
+Enforcement:
+→ Rule rejected at creation
+
+SR-21: Facilitator Power Is Limited
+
+Facilitators cannot:
+
+change platform rules
+
+hide enforcement history
+
+bypass system checks
+
+Enforcement:
+→ Action blocked
+
+8. APPEAL & CORRECTION RULES
+SR-22: Right to Appeal
+
+Users may appeal moderation actions.
+
+Appeals are logged and time-bound.
+
+Enforcement:
+→ Appeal UI always available
+
+SR-23: Appeal Does Not Remove Audit Trail
+
+Even reversed actions remain logged.
+
+Enforcement:
+→ Log immutability
+
+9. PLATFORM EVOLUTION RULE
+SR-24: Constitution Changes Are Versioned
+
+Platform rules may evolve, but:
+
+changes are versioned
+
+users are notified
+
+old actions keep old rule references
+
+Enforcement:
+→ Version control
+
+✅ FINAL COUNT
+
+24 SYSTEM RULES
+
+This is:
+
+Not bloated
+
+Not vague
+
+Fully enforceable
+
+Grant-defensible
+
+MVP-appropriate
