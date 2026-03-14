@@ -1,6 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
-import { type LucideIcon } from "lucide-react";
+import { type LucideIcon, LogOut, UserCircle } from "lucide-react";
+import { useAuth } from "../../context/AuthContext";
+import civitasLogo from "../../assets/civitaslogo.png";
 
 interface SidebarItem {
     icon: LucideIcon;
@@ -10,36 +12,79 @@ interface SidebarItem {
 
 interface SidebarProps {
     items: SidebarItem[];
+    onClose?: () => void;
 }
 
-export function Sidebar({ items }: SidebarProps) {
+export function Sidebar({ items, onClose }: SidebarProps) {
     const location = useLocation();
+    const { user, logout } = useAuth();
+    const dashboardLink = user?.role === 'FACILITATOR' || user?.role === 'CO_FACILITATOR' ? "/facilitator/home" : "/member/home";
 
     return (
         <aside className="w-64 border-r border-border bg-surface h-screen flex flex-col">
-            <div className="p-6 border-b border-border">
-                <h1 className="text-xl font-bold text-primary">Civitas</h1>
+            <div className="p-6 border-b border-border hidden md:block">
+                <Link to={dashboardLink} className="flex items-center gap-2">
+                    <img src={civitasLogo} alt="Civitas Logo" className="h-8 w-auto rounded-full" />
+                    <span className="text-xl font-bold text-primary hidden">Civitas</span>
+                </Link>
             </div>
             <nav className="flex-1 p-4 space-y-2">
                 {items.map((item) => {
-                    const isActive = location.pathname === item.href;
+                    const isActive = location.pathname.startsWith(item.href);
+                    const isFacilitatorItem = location.pathname.includes('/facilitator');
+                    const activeColorClass = isFacilitatorItem ? "text-accent-warning border-accent-warning bg-accent-warning/10" : "bg-accent/10 text-accent border-accent";
+                    const iconActiveColorClass = isFacilitatorItem ? "text-accent-warning" : "text-accent";
+
                     return (
                         <Link
                             key={item.href}
                             to={item.href}
+                            onClick={() => onClose?.()}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors",
+                                "flex items-center gap-3 px-3 py-2 rounded-r-md text-sm font-medium transition-all group border-l-2",
                                 isActive
-                                    ? "bg-accent/10 text-accent"
-                                    : "text-primary/70 hover:bg-surface/50 hover:text-primary"
+                                    ? activeColorClass
+                                    : "text-primary/70 border-transparent hover:bg-surface/50 hover:text-primary hover:border-border"
                             )}
                         >
-                            <item.icon className="w-5 h-5" />
+                            <item.icon className={cn(
+                                "w-5 h-5 transition-colors",
+                                isActive ? iconActiveColorClass : "text-primary/40 group-hover:text-primary"
+                            )} />
                             {item.label}
                         </Link>
                     );
                 })}
             </nav>
+
+            <div className="p-4 border-t border-border space-y-4">
+                {user && (
+                    <div className="flex items-center gap-3 px-3 py-2">
+                        {user.avatar ? (
+                            <div className="w-8 h-8 rounded-full overflow-hidden border border-accent/20">
+                                <img src={user.avatar} alt={user.username} className="w-full h-full object-cover" />
+                            </div>
+                        ) : (
+                            <UserCircle className="w-8 h-8 text-accent" />
+                        )}
+                        <div className="flex flex-col min-w-0">
+                            <span className="text-sm font-bold text-primary truncate w-32">{user.username}</span>
+                            <span className="text-[10px] uppercase tracking-widest font-black text-accent/70">{user.role}</span>
+                        </div>
+                    </div>
+                )}
+                <button
+                    onClick={() => {
+                        if (window.confirm("Are you sure you want to exit the Civitas network?")) {
+                            logout();
+                        }
+                    }}
+                    className="flex items-center gap-3 px-3 py-2 w-full text-left text-sm font-medium text-red-500 hover:bg-red-500/10 rounded-md transition-colors"
+                >
+                    <LogOut className="w-5 h-5" />
+                    Sign Out
+                </button>
+            </div>
         </aside>
     );
 }

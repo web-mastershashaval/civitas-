@@ -1,4 +1,4 @@
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import { CheckCircle2, ShieldAlert } from "lucide-react";
@@ -7,11 +7,14 @@ export function RoleConfirmation() {
     const [searchParams] = useSearchParams();
     const role = searchParams.get("role") || "member";
     const navigate = useNavigate();
+    const location = useLocation();
 
     const isFacilitator = role === "facilitator";
 
     const handleConfirm = () => {
-        navigate("/auth/governance-orientation?role=" + role);
+        navigate("/auth/governance-orientation?role=" + role, {
+            state: location.state
+        });
     };
 
     return (

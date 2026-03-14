@@ -7,17 +7,19 @@ export default {
     theme: {
         extend: {
             colors: {
-                background: "#0e1117",
-                surface: "#161b22",
+                background: "#0b0e14",
+                surface: "#151921",
+                "surface-bright": "#1c222d",
                 primary: {
-                    DEFAULT: "#e6edf3",
-                    muted: "#9ba3b4",
+                    DEFAULT: "#f0f2f5",
+                    muted: "#94a3b8",
                 },
-                border: "#222222",
+                border: "#262c36",
                 accent: {
-                    DEFAULT: "#4f8cff",
-                    teal: "#77cccc",
-                    warning: "#f0b429",
+                    DEFAULT: "#3b82f6",
+                    gold: "#eab308",
+                    crimson: "#ef4444",
+                    success: "#22c55e",
                 },
             },
             fontFamily: {

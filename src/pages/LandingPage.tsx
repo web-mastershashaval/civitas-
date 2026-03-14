@@ -1,18 +1,72 @@
+import { useState } from "react";
 import { Button } from "../components/ui/Button";
 import { Link } from "react-router-dom";
+import civitasLogo from "../assets/civitaslogo.png";
+import { usePWAInstall } from "../hooks/usePWAInstall";
+import { useAuth } from "../context/AuthContext";
+import { Download, Menu, X } from "lucide-react";
 
 export function LandingPage() {
+    const { showInstallPrompt, installApp } = usePWAInstall();
+    const { isAuthenticated, user } = useAuth();
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const dashboardLink = user?.role === 'FACILITATOR' || user?.role === 'CO_FACILITATOR' ? "/facilitator/home" : "/member/home";
+
     return (
         <div className="min-h-screen bg-[#0f1115] text-[#e6e6e6] font-sans">
             {/* NAVBAR */}
-            <header className="flex justify-between items-center px-8 py-5 border-b border-[#2a2f3a]">
-                <div className="font-bold tracking-[2px]">CIVITAS</div>
-                <nav className="flex gap-6 text-[#9aa0a6] text-sm">
+            <header className="flex justify-between items-center px-6 md:px-8 py-5 border-b border-[#2a2f3a] sticky top-0 bg-[#0f1115]/80 backdrop-blur-md z-50">
+                <Link to={isAuthenticated ? dashboardLink : "/"} className="flex items-center gap-2">
+                    <img src={civitasLogo} alt="Civitas Logo" className="h-10 w-auto rounded-full" />
+                </Link>
+
+                {/* Mobile Menu Toggle */}
+                <button
+                    className="md:hidden p-2 text-[#9aa0a6] hover:text-[#e6e6e6]"
+                    onClick={() => setIsMenuOpen(!isMenuOpen)}
+                >
+                    {isMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                </button>
+
+                {/* Desktop Nav */}
+                <nav className="hidden md:flex gap-6 items-center text-[#9aa0a6] text-sm">
+                    {showInstallPrompt && (
+                        <button
+                            onClick={installApp}
+                            className="flex items-center gap-2 text-[#4f8cff] hover:text-[#4f8cff]/80 transition-colors font-bold uppercase tracking-widest text-[10px]"
+                        >
+                            <Download className="w-4 h-4" />
+                            Install App
+                        </button>
+                    )}
                     <a href="#principles" className="hover:text-[#e6e6e6] transition-colors">Principles</a>
                     <a href="#how" className="hover:text-[#e6e6e6] transition-colors">How It Works</a>
                     <a href="#roles" className="hover:text-[#e6e6e6] transition-colors">Roles</a>
-                    <Link to="/auth/signin" className="hover:text-[#e6e6e6] transition-colors">Enter</Link>
+                    {isAuthenticated ? (
+                        <Link to={dashboardLink} className="text-[#4f8cff] font-black uppercase tracking-widest text-[10px] border border-[#4f8cff]/30 px-3 py-1 hover:bg-[#4f8cff]/10 transition-all">Dashboard</Link>
+                    ) : (
+                        <Link to="/auth/signin" className="hover:text-[#e6e6e6] transition-colors">Enter</Link>
+                    )}
                 </nav>
+
+                {/* Mobile Nav Overlay */}
+                {isMenuOpen && (
+                    <div className="absolute top-full left-0 w-full bg-[#161a20] border-b border-[#2a2f3a] p-6 flex flex-col gap-4 md:hidden animate-in fade-in slide-in-from-top-4 duration-200">
+                        {showInstallPrompt && (
+                            <button
+                                onClick={() => { installApp(); setIsMenuOpen(false); }}
+                                className="flex items-center gap-2 text-[#4f8cff] font-bold uppercase tracking-widest text-xs"
+                            >
+                                <Download className="w-4 h-4" />
+                                Install App
+                            </button>
+                        )}
+                        <a href="#principles" onClick={() => setIsMenuOpen(false)} className="text-[#9aa0a6] hover:text-[#e6e6e6]">Principles</a>
+                        <a href="#how" onClick={() => setIsMenuOpen(false)} className="text-[#9aa0a6] hover:text-[#e6e6e6]">How It Works</a>
+                        <a href="#roles" onClick={() => setIsMenuOpen(false)} className="text-[#9aa0a6] hover:text-[#e6e6e6]">Roles</a>
+                        <Link to="/auth/signin" onClick={() => setIsMenuOpen(false)} className="text-[#9aa0a6] hover:text-[#e6e6e6]">Enter</Link>
+                    </div>
+                )}
             </header>
 
             {/* HERO */}
@@ -44,7 +98,7 @@ export function LandingPage() {
             </section>
 
             {/* PRINCIPLES */}
-            <section id="principles" class="py-16 px-8 max-w-[1000px] mx-auto">
+            <section id="principles" className="py-16 px-8 max-w-[1000px] mx-auto">
                 <h2 className="text-3xl font-bold mb-10 text-center">Core Principles</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[

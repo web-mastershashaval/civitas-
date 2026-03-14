@@ -4,6 +4,7 @@ import { Button } from "../../components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { CheckSquare } from "lucide-react";
+import { communityService } from "../../services/api";
 
 // Mock data
 const communityQuestions = {
@@ -22,11 +23,20 @@ export function CommunityApplication() {
     const [answers, setAnswers] = useState<Record<number, string>>({});
     const [agreed, setAgreed] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const [submitting, setSubmitting] = useState(false);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Application submitted", { communityId: id, answers });
-        // Simulate submission and redirect
-        navigate("/member/home");
+        setSubmitting(true);
+        try {
+            await communityService.joinCommunity(id!);
+            alert("Application submitted! Facilitators will review your request shortly.");
+            navigate("/member/home");
+        } catch (err: any) {
+            alert("Failed to submit application: " + (err.response?.data?.detail || "Unknown error"));
+        } finally {
+            setSubmitting(false);
+        }
     };
 
     return (
@@ -80,8 +90,8 @@ export function CommunityApplication() {
                         <Button type="button" variant="ghost" onClick={() => navigate(-1)}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={!agreed}>
-                            Submit Application
+                        <Button type="submit" disabled={!agreed || submitting}>
+                            {submitting ? "Submitting..." : "Submit Application"}
                         </Button>
                     </CardFooter>
                 </form>

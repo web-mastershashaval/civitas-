@@ -3,7 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Loader2, Camera, Globe } from "lucide-react";
+import { useRef } from "react";
+import api from "../../services/api";
 
 export function CreateCommunity() {
     const navigate = useNavigate();
@@ -15,14 +17,39 @@ export function CreateCommunity() {
         strictness: "Medium",
         boards: ["General", "Announcements"],
     });
+    const [iconFile, setIconFile] = useState<File | null>(null);
+    const [bannerFile, setBannerFile] = useState<File | null>(null);
+    const [iconPreview, setIconPreview] = useState<string>("");
+    const [bannerPreview, setBannerPreview] = useState<string>("");
+
+    const iconInputRef = useRef<HTMLInputElement>(null);
+    const bannerInputRef = useRef<HTMLInputElement>(null);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleNext = () => setStep(step + 1);
     const handleBack = () => setStep(step - 1);
 
-    const handleSubmit = () => {
-        console.log("Creating community", formData);
-        // Simulate creation
-        navigate("/facilitator/home");
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        try {
+            const data = new FormData();
+            data.append('name', formData.name);
+            data.append('description', formData.purpose);
+            data.append('access_type', formData.access.toUpperCase());
+            data.append('governance_type', formData.strictness.toUpperCase());
+            if (iconFile) data.append('image', iconFile);
+            if (bannerFile) data.append('banner', bannerFile);
+
+            await api.post("/communities/", data, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            navigate("/facilitator/home");
+        } catch (err) {
+            console.error("Failed to create community", err);
+            setIsLoading(false);
+            alert("Failed to create community.");
+        }
     };
 
     return (
@@ -69,6 +96,76 @@ export function CreateCommunity() {
                                     placeholder="What is this community for?"
                                 />
                             </div>
+
+                            <div className="pt-4 border-t border-border space-y-6">
+                                <label className="text-sm font-bold uppercase tracking-widest text-[#4f8cff] block">Visual Identity</label>
+
+                                <div className="grid grid-cols-2 gap-8">
+                                    {/* Icon */}
+                                    <div className="space-y-4 text-center">
+                                        <label className="text-[10px] uppercase tracking-widest font-black text-[#9aa0a6] block">Community Icon</label>
+                                        <div className="relative mx-auto w-24 h-24 bg-[#161a20] border-2 border-[#2a2f3a] flex items-center justify-center overflow-hidden group">
+                                            {iconPreview ? (
+                                                <img src={iconPreview} alt="Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <Globe className="w-10 h-10 text-[#2a2f3a]" />
+                                            )}
+                                            <button
+                                                onClick={() => iconInputRef.current?.click()}
+                                                type="button"
+                                                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Camera className="w-6 h-6 text-white" />
+                                            </button>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={iconInputRef}
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setIconFile(file);
+                                                    setIconPreview(URL.createObjectURL(file));
+                                                }
+                                            }}
+                                        />
+                                    </div>
+
+                                    {/* Banner */}
+                                    <div className="space-y-4 text-center">
+                                        <label className="text-[10px] uppercase tracking-widest font-black text-[#9aa0a6] block">Wide Banner</label>
+                                        <div className="relative w-full h-24 bg-[#161a20] border-2 border-[#2a2f3a] flex items-center justify-center overflow-hidden group">
+                                            {bannerPreview ? (
+                                                <img src={bannerPreview} alt="Banner Preview" className="w-full h-full object-cover" />
+                                            ) : (
+                                                <div className="text-[10px] font-black uppercase text-[#2a2f3a]">Optional Banner</div>
+                                            )}
+                                            <button
+                                                onClick={() => bannerInputRef.current?.click()}
+                                                type="button"
+                                                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                                            >
+                                                <Camera className="w-6 h-6 text-white" />
+                                            </button>
+                                        </div>
+                                        <input
+                                            type="file"
+                                            ref={bannerInputRef}
+                                            className="hidden"
+                                            accept="image/*"
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) {
+                                                    setBannerFile(file);
+                                                    setBannerPreview(URL.createObjectURL(file));
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
                         </>
                     )}
 
@@ -81,8 +178,8 @@ export function CreateCommunity() {
                                         <div
                                             key={type}
                                             className={`cursor-pointer rounded-md border p-4 text-center transition-all ${formData.access === type
-                                                    ? "border-accent bg-accent/10 text-accent"
-                                                    : "border-border hover:bg-surface"
+                                                ? "border-accent bg-accent/10 text-accent"
+                                                : "border-border hover:bg-surface"
                                                 }`}
                                             onClick={() => setFormData({ ...formData, access: type })}
                                         >
@@ -98,8 +195,8 @@ export function CreateCommunity() {
                                         <div
                                             key={level}
                                             className={`cursor-pointer rounded-md border p-4 text-center transition-all ${formData.strictness === level
-                                                    ? "border-accent bg-accent/10 text-accent"
-                                                    : "border-border hover:bg-surface"
+                                                ? "border-accent bg-accent/10 text-accent"
+                                                : "border-border hover:bg-surface"
                                                 }`}
                                             onClick={() => setFormData({ ...formData, strictness: level })}
                                         >
@@ -140,8 +237,8 @@ export function CreateCommunity() {
                             Next <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmit}>
-                            Create Community
+                        <Button onClick={handleSubmit} disabled={isLoading}>
+                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Community"}
                         </Button>
                     )}
                 </CardFooter>

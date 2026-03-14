@@ -1,0 +1,9 @@
+django>=5.0
+djangorestframework
+django-cors-headers
+django-environ
+djangorestframework-simplejwt
+pytest-django
+pillow
+django-filter
+psycopg2-binary

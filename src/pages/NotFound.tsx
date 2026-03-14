@@ -30,7 +30,7 @@ export function NotFound() {
             </div>
 
             <footer className="absolute bottom-8 text-[#9aa0a6] text-xs uppercase tracking-widest">
-                Civitas Governance Protocol v1.0
+                Civitas v1.0
             </footer>
         </div>
     );

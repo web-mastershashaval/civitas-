@@ -1,23 +1,82 @@
 import { useState } from "react";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
+import api from "../../services/api";
 
 export function GovernanceOrientation() {
     const [searchParams] = useSearchParams();
     const role = searchParams.get("role") || "member";
     const navigate = useNavigate();
 
+    const [error, setError] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
     const [consent1, setConsent1] = useState(false);
     const [consent2, setConsent2] = useState(false);
+    // const { signIn } = useAuth(); // No longer needed
+    const location = useLocation();
 
     const isFacilitator = role === "facilitator";
 
-    const handleContinue = () => {
+    const handleContinue = async () => {
         if (consent1 && consent2) {
-            if (isFacilitator) {
-                navigate("/facilitator/home");
-            } else {
-                navigate("/member/home");
+            setIsLoading(true);
+            setError(null);
+            try {
+                const signupData = location.state;
+                const token = localStorage.getItem('civitas_token');
+
+                if (token) {
+                    // Scenario A: Existing user completing orientation
+                    await api.post("/users/complete_orientation/");
+                    const role = localStorage.getItem('civitas_role')?.toLowerCase() || 'member';
+                    navigate(role === 'facilitator' ? '/facilitator/home' : '/member/home');
+                } else if (signupData) {
+                    // Scenario B: New user registering (current flow)
+                    await api.post("/users/register/", {
+                        username: signupData.username,
+                        email: signupData.email,
+                        password: signupData.password,
+                        role: signupData.role.toUpperCase() === 'FACILITATOR' ? 'FACILITATOR' : 'MEMBER'
+                    });
+
+                    navigate("/auth/signin", {
+                        state: { message: "Access granted. Please verify your identity to enter." }
+                    });
+                } else {
+                    throw new Error("Session invalid. Please login again.");
+                }
+            } catch (err: any) {
+                console.error("Signup failed:", err);
+
+                // Extract error message from DRF response
+                let errorMessage = "Registration failed. Identity could not be established.";
+
+                if (err.response?.data) {
+                    // DRF field validation errors come as {field: [error1, error2]}
+                    const data = err.response.data;
+                    if (data.username) {
+                        errorMessage = Array.isArray(data.username) ? data.username[0] : data.username;
+                    } else if (data.email) {
+                        errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
+                    } else if (data.detail) {
+                        errorMessage = data.detail;
+                    } else if (typeof data === 'string') {
+                        errorMessage = data;
+                    } else {
+                        // Get first error from any field
+                        const firstField = Object.keys(data)[0];
+                        if (firstField) {
+                            const fieldError = data[firstField];
+                            errorMessage = Array.isArray(fieldError) ? fieldError[0] : fieldError;
+                        }
+                    }
+                } else if (err.message) {
+                    errorMessage = err.message;
+                }
+
+                setError(errorMessage);
+            } finally {
+                setIsLoading(false);
             }
         }
     };
@@ -47,13 +106,21 @@ export function GovernanceOrientation() {
                     </p>
                 </section>
 
+                {/* ERROR DISPLAY */}
+                {error && (
+                    <section className="border border-[#ff5c5c] bg-[#ff5c5c]/10 p-5 rounded-sm">
+                        <strong className="text-[#ff5c5c] block mb-1 font-bold">Registration Error:</strong>
+                        <p className="text-sm text-[#ff5c5c]">{error}</p>
+                    </section>
+                )}
+
                 {/* CHARTER CONTENT */}
                 <section>
                     <h2 className="text-xl font-bold mb-4">
                         {isFacilitator ? "Facilitator Charter" : "Community Charter"}
                     </h2>
 
-                    <div className="max-h-[350px] overflow-y-auto border border-[#2a2f3a] p-8 bg-[#161a20] space-y-6 text-sm leading-relaxed">
+                    <div className="max-h-[350px] overflow-y-auto no-scrollbar border border-[#2a2f3a] p-8 bg-[#161a20] space-y-6 text-sm leading-relaxed">
                         {isFacilitator ? (
                             <>
                                 <div>
@@ -163,10 +230,10 @@ export function GovernanceOrientation() {
                     <Button
                         className={`h-11 px-8 font-semibold transition-all ${consent1 && consent2 ? "bg-[#4f8cff] text-white opacity-100" : "bg-[#4f8cff] text-white opacity-40 cursor-not-allowed"
                             }`}
-                        disabled={!consent1 || !consent2}
+                        disabled={!consent1 || !consent2 || isLoading}
                         onClick={handleContinue}
                     >
-                        Accept & Continue
+                        {isLoading ? "Establishing Identity..." : "Accept & Continue"}
                     </Button>
                 </section>
             </div>

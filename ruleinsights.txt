@@ -1,0 +1,197 @@
+🧱 CIVITAS RULES ENGINE — DATA MODELS (MVP)
+
+Design goals:
+
+Deterministic (no AI magic)
+
+Fully auditable
+
+Context-aware
+
+Easy to evolve
+
+Safe by default
+
+1️⃣ USERS & ROLES (FOUNDATION)
+users
+users (
+  id UUID PK,
+  email VARCHAR UNIQUE,
+  status ENUM('active','suspended','pending'),
+  onboarding_completed BOOLEAN,
+  created_at TIMESTAMP
+)
+
+roles
+roles (
+  id SERIAL PK,
+  name ENUM('member','facilitator','admin')
+)
+
+user_roles
+user_roles (
+  user_id UUID FK -> users.id,
+  role_id INT FK -> roles.id,
+  scope ENUM('platform','community'),
+  community_id UUID NULL,
+  assigned_at TIMESTAMP
+)
+
+
+✔ Supports community-specific facilitators
+✔ Prevents global power creep
+
+2️⃣ COMMUNITIES & BOARDS (CONTEXT)
+communities
+communities (
+  id UUID PK,
+  name VARCHAR,
+  visibility ENUM('open','application','private'),
+  facilitator_id UUID FK -> users.id,
+  created_at TIMESTAMP
+)
+
+board_types (SYSTEM-DEFINED)
+board_types (
+  id SERIAL PK,
+  key VARCHAR UNIQUE,           -- technical, civic_dialogue, research
+  name VARCHAR,
+  description TEXT,
+  tone_guidelines TEXT,
+  requires_citations BOOLEAN
+)
+
+board_type_terms
+board_type_terms (
+  id SERIAL PK,
+  board_type_id INT FK -> board_types.id,
+  term VARCHAR,
+  term_type ENUM('allowed','contextual','disallowed')
+)
+
+
+✔ THIS table solves your “kill process” problem
+✔ No NLP, just structured context
+
+boards
+boards (
+  id UUID PK,
+  community_id UUID FK -> communities.id,
+  board_type_id INT FK -> board_types.id,
+  title VARCHAR,
+  description TEXT,
+  created_at TIMESTAMP
+)
+
+3️⃣ PLATFORM SAFETY RULES (IMMUTABLE)
+platform_rules
+platform_rules (
+  id SERIAL PK,
+  code VARCHAR UNIQUE,        -- SR-1, SR-2
+  description TEXT,
+  severity ENUM('block'),
+  created_at TIMESTAMP
+)
+
+platform_rule_patterns
+platform_rule_patterns (
+  id SERIAL PK,
+  platform_rule_id INT FK -> platform_rules.id,
+  pattern TEXT               -- regex / keyword
+)
+
+
+🔒 Cannot be edited by facilitators
+🔒 Always enforced
+
+4️⃣ COMMUNITY RULES (HUMAN GOVERNANCE)
+community_rules
+community_rules (
+  id UUID PK,
+  community_id UUID FK -> communities.id,
+  title VARCHAR,
+  description TEXT,
+  applies_to ENUM('post','comment'),
+  created_by UUID FK -> users.id,
+  active BOOLEAN,
+  created_at TIMESTAMP
+)
+
+5️⃣ CONTENT & SUBMISSIONS
+content_items
+content_items (
+  id UUID PK,
+  board_id UUID FK -> boards.id,
+  author_id UUID FK -> users.id,
+  body TEXT,
+  status ENUM('active','flagged','removed'),
+  created_at TIMESTAMP
+)
+
+6️⃣ RULE EVALUATION LOG (CRITICAL)
+rule_evaluations
+rule_evaluations (
+  id UUID PK,
+  content_id UUID FK -> content_items.id,
+  rule_type ENUM('platform','board','community'),
+  rule_id VARCHAR,            -- SR-1, board_type_term_id, community_rule_id
+  decision ENUM('allow','warn','block','flag'),
+  evaluated_at TIMESTAMP
+)
+
+
+✔ This is your audit trail
+✔ Essential for appeals & grants
+
+7️⃣ MODERATION ACTIONS
+moderation_actions
+moderation_actions (
+  id UUID PK,
+  content_id UUID FK -> content_items.id,
+  action ENUM('remove','warn','restrict'),
+  rule_id UUID,
+  moderator_id UUID FK -> users.id,
+  reason TEXT,
+  created_at TIMESTAMP
+)
+
+
+❌ No silent moderation
+✔ Rule citation required
+
+8️⃣ APPEALS
+appeals
+appeals (
+  id UUID PK,
+  moderation_action_id UUID FK -> moderation_actions.id,
+  appellant_id UUID FK -> users.id,
+  status ENUM('pending','approved','rejected'),
+  decision_reason TEXT,
+  decided_by UUID FK -> users.id,
+  created_at TIMESTAMP
+)
+
+9️⃣ RATE LIMITS & ABUSE (OPTIONAL MVP+)
+user_activity_limits
+user_activity_limits (
+  user_id UUID FK -> users.id,
+  action VARCHAR,
+  window_minutes INT,
+  max_count INT
+)
+
+10️⃣ EXAMPLE DATA (YOUR SENTENCE)
+Board Type: Technical
+INSERT INTO board_type_terms
+(board_type_id, term, term_type)
+VALUES
+(1, 'kill', 'allowed'),
+(1, 'terminate', 'allowed');
+
+Result
+
+“I would like to kill the terminal process”
+
+✔ Allowed
+✔ Logged
+✔ No facilitator ping
