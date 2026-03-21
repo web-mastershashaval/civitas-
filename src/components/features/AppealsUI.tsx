@@ -62,7 +62,7 @@ const AppealsUI: React.FC = () => {
             setMessage({ type: 'success', text: 'Appeal submitted successfully.' });
             setSelectedAction(null);
             setAppealReason('');
-            fetchData(); // Refresh list
+            fetchData();
         } catch (error: any) {
             setMessage({
                 type: 'error',
@@ -73,35 +73,38 @@ const AppealsUI: React.FC = () => {
         }
     };
 
-    // Filter actions that haven't been appealed yet
     const appealableActions = actions.filter(action =>
         !appeals.some(appeal => appeal.moderation_action === action.id)
     );
 
-    if (loading) return <div>Loading...</div>;
+    if (loading) return (
+        <div className="h-48 flex items-center justify-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#4f8cff]"></div>
+        </div>
+    );
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-12 animate-in fade-in duration-500">
             {/* New Appeal Section */}
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-xl font-bold mb-4">Submit an Appeal</h3>
+            <div className="bg-[#161a20] border border-[#2a2f3a] p-8">
+                <h3 className="text-sm md:text-base uppercase tracking-[0.3em] font-black text-[#e6e6e6] mb-8">Submit Redress Appeal</h3>
                 {appealableActions.length === 0 ? (
-                    <p className="text-gray-500">You have no new moderation actions to appeal.</p>
+                    <p className="text-[#9aa0a6] text-xs uppercase tracking-widest italic">No pending moderation outcomes available for appeal.</p>
                 ) : (
-                    <form onSubmit={handleAppealSubmit} className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Select Action to Appeal
+                    <form onSubmit={handleAppealSubmit} className="space-y-6">
+                        <div className="space-y-2">
+                            <label className="block text-[10px] uppercase font-black tracking-widest text-[#9aa0a6]">
+                                Subject Outcome
                             </label>
                             <select
                                 value={selectedAction || ''}
                                 onChange={(e) => setSelectedAction(e.target.value)}
-                                className="w-full border border-gray-300 rounded p-2"
+                                className="w-full bg-[#0f1115] border border-[#2a2f3a] p-3 text-sm text-[#e6e6e6] focus:outline-none focus:border-[#4f8cff]/50 rounded-none"
                                 required
                             >
-                                <option value="">-- Select an action --</option>
+                                <option value="" className="bg-[#0f1115]">Select an outcome...</option>
                                 {appealableActions.map(action => (
-                                    <option key={action.id} value={action.id}>
+                                    <option key={action.id} value={action.id} className="bg-[#0f1115]">
                                         {action.action} - {new Date(action.created_at).toLocaleDateString()}
                                     </option>
                                 ))}
@@ -109,67 +112,71 @@ const AppealsUI: React.FC = () => {
                         </div>
 
                         {selectedAction && (
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-2">
-                                    Reason for Appeal
+                            <div className="space-y-2 animate-in slide-in-from-top-2 duration-300">
+                                <label className="block text-[10px] uppercase font-black tracking-widest text-[#9aa0a6]">
+                                    Justification for Review
                                 </label>
                                 <textarea
                                     value={appealReason}
                                     onChange={(e) => setAppealReason(e.target.value)}
-                                    className="w-full border border-gray-300 rounded p-2 h-24"
-                                    placeholder="Explain why this action should be reversed..."
+                                    className="w-full bg-[#0f1115] border border-[#2a2f3a] p-4 text-sm text-[#e6e6e6] h-32 focus:outline-none focus:border-[#4f8cff]/50 rounded-none italic"
+                                    placeholder="Provide detailed context for the review request..."
                                     required
                                 />
                             </div>
                         )}
 
                         {message && (
-                            <div className={`p-4 rounded ${message.type === 'success' ? 'bg-green-50 text-green-700' : 'bg-red-50 text-red-700'}`}>
+                            <div className={`p-4 text-[10px] uppercase tracking-widest font-bold ${message.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' : 'bg-red-500/10 text-red-500 border border-red-500/20'}`}>
                                 {message.text}
                             </div>
                         )}
 
-                        <Button type="submit" disabled={!selectedAction || submitting}>
-                            {submitting ? 'Submitting...' : 'Submit Appeal'}
+                        <Button 
+                            type="submit" 
+                            disabled={!selectedAction || submitting}
+                            className="bg-[#4f8cff] hover:bg-[#4f8cff]/90 text-black font-black uppercase tracking-[0.2em] text-[10px] h-11 px-8 rounded-none transition-all disabled:opacity-50"
+                        >
+                            {submitting ? 'Transmitting...' : 'Commit Appeal'}
                         </Button>
                     </form>
                 )}
             </div>
 
             {/* Appeal History */}
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-xl font-bold mb-4">Appeal History</h3>
+            <div className="bg-[#161a20] border border-[#2a2f3a] p-8">
+                <h3 className="text-sm md:text-base uppercase tracking-[0.3em] font-black text-[#e6e6e6] mb-8">Redress History</h3>
                 {appeals.length === 0 ? (
-                    <p className="text-gray-500">No appeals found.</p>
+                    <p className="text-[#9aa0a6] text-xs uppercase tracking-widest italic">No existing redress records found in the ledger.</p>
                 ) : (
                     <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Appeal Reason</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Decision</th>
+                        <table className="w-full text-left border-collapse">
+                            <thead>
+                                <tr className="border-b border-[#2a2f3a]">
+                                    <th className="py-4 text-[10px] uppercase tracking-widest font-black text-[#9aa0a6]">Timestamp</th>
+                                    <th className="py-4 text-[10px] uppercase tracking-widest font-black text-[#9aa0a6]">Status</th>
+                                    <th className="py-4 text-[10px] uppercase tracking-widest font-black text-[#9aa0a6]">Reason</th>
+                                    <th className="py-4 text-[10px] uppercase tracking-widest font-black text-[#9aa0a6]">Outcome</th>
                                 </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
+                            <tbody className="divide-y divide-[#2a2f3a]/30">
                                 {appeals.map(appeal => (
-                                    <tr key={appeal.id}>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                    <tr key={appeal.id} className="hover:bg-white/[0.02] transition-colors">
+                                        <td className="py-4 text-xs font-bold text-[#e6e6e6]">
                                             {new Date(appeal.created_at).toLocaleDateString()}
                                         </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full 
-                                                ${appeal.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
-                                                    appeal.status === 'REJECTED' ? 'bg-red-100 text-red-800' :
-                                                        'bg-yellow-100 text-yellow-800'}`}>
+                                        <td className="py-4">
+                                            <span className={`px-2 py-1 text-[9px] font-black uppercase tracking-tighter rounded-sm border
+                                                ${appeal.status === 'APPROVED' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
+                                                    appeal.status === 'REJECTED' ? 'bg-red-500/10 text-red-500 border-red-500/20' :
+                                                        'bg-yellow-500/10 text-yellow-500 border-yellow-500/20'}`}>
                                                 {appeal.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500 max-w-xs truncate">
+                                        <td className="py-4 text-xs text-[#9aa0a6] max-w-xs truncate italic">
                                             {appeal.appeal_reason}
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-500">
+                                        <td className="py-4 text-xs text-[#e6e6e6] font-medium">
                                             {appeal.decision_reason || '-'}
                                         </td>
                                     </tr>

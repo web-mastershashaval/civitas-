@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
-import { ArrowLeft, ArrowRight, Check, Loader2, Camera, Globe } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Camera, Globe } from "lucide-react";
 import { useRef } from "react";
 import api from "../../services/api";
+import { useToast } from "../../components/ui/Toast";
 
 export function CreateCommunity() {
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         name: "",
@@ -44,11 +46,13 @@ export function CreateCommunity() {
             await api.post("/communities/", data, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
+            showToast("Community created successfully! Identity and governance rules established.", "success");
             navigate("/facilitator/home");
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to create community", err);
             setIsLoading(false);
-            alert("Failed to create community.");
+            const msg = err.response?.data?.detail || "Failed to create community.";
+            showToast(msg, "error");
         }
     };
 
@@ -237,8 +241,8 @@ export function CreateCommunity() {
                             Next <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     ) : (
-                        <Button onClick={handleSubmit} disabled={isLoading}>
-                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Create Community"}
+                        <Button onClick={handleSubmit} isLoading={isLoading}>
+                            Create Community
                         </Button>
                     )}
                 </CardFooter>

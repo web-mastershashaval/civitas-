@@ -11,6 +11,7 @@ interface User {
     phone?: string;
     facebook_profile?: string;
     has_completed_orientation: boolean;
+    reputation_score?: number;
 }
 
 interface AuthContextType {

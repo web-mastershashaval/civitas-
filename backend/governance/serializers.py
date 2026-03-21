@@ -115,6 +115,8 @@ class BoardSerializer(serializers.ModelSerializer):
         return None
 
 class ResponseSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source='author.username')
+    author_username = serializers.ReadOnlyField(source='author.username')
     author_id = serializers.ReadOnlyField(source='author.id')
     author_avatar = serializers.SerializerMethodField()
     timestamp = serializers.SerializerMethodField()
@@ -123,7 +125,15 @@ class ResponseSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Response
-        fields = ['id', 'content', 'type', 'is_official', 'author', 'author_id', 'author_avatar', 'discussion', 'created_at', 'timestamp', 'upvotes', 'downvotes']
+        fields = ['id', 'content', 'type', 'is_official', 'author', 'author_username', 'author_id', 'author_avatar', 'discussion', 'created_at', 'timestamp', 'upvotes', 'downvotes', 'image']
+
+    def get_image(self, obj):
+        if obj.image:
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(obj.image.url)
+            return obj.image.url
+        return None
 
     def get_upvotes(self, obj):
         return Vote.objects.filter(content_type='RESPONSE', object_id=obj.id, vote_type='UP').count()

@@ -1,6 +1,8 @@
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { cn } from "../../lib/utils";
 import { type LucideIcon, LogOut, UserCircle } from "lucide-react";
+import api from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
 import civitasLogo from "../../assets/civitaslogo.png";
 
@@ -20,6 +22,25 @@ export function Sidebar({ items, onClose }: SidebarProps) {
     const { user, logout } = useAuth();
     const dashboardLink = user?.role === 'FACILITATOR' || user?.role === 'CO_FACILITATOR' ? "/facilitator/home" : "/member/home";
 
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const res = await api.get('/notifications/unread_count/');
+                setUnreadCount(res.data.count);
+            } catch (err: any) {
+                console.error("Failed to fetch unread count", err);
+            }
+        };
+
+        if (user) {
+            fetchUnreadCount();
+            const interval = setInterval(fetchUnreadCount, 30000); // Poll every 30s
+            return () => clearInterval(interval);
+        }
+    }, [user]);
+
     return (
         <aside className="w-64 border-r border-border bg-surface h-screen flex flex-col">
             <div className="p-6 border-b border-border hidden md:block">
@@ -34,6 +55,7 @@ export function Sidebar({ items, onClose }: SidebarProps) {
                     const isFacilitatorItem = location.pathname.includes('/facilitator');
                     const activeColorClass = isFacilitatorItem ? "text-accent-warning border-accent-warning bg-accent-warning/10" : "bg-accent/10 text-accent border-accent";
                     const iconActiveColorClass = isFacilitatorItem ? "text-accent-warning" : "text-accent";
+                    const isNotifications = item.label === "Notifications";
 
                     return (
                         <Link
@@ -41,7 +63,7 @@ export function Sidebar({ items, onClose }: SidebarProps) {
                             to={item.href}
                             onClick={() => onClose?.()}
                             className={cn(
-                                "flex items-center gap-3 px-3 py-2 rounded-r-md text-sm font-medium transition-all group border-l-2",
+                                "flex items-center gap-3 px-3 py-2 rounded-r-md text-sm font-medium transition-all group border-l-2 relative",
                                 isActive
                                     ? activeColorClass
                                     : "text-primary/70 border-transparent hover:bg-surface/50 hover:text-primary hover:border-border"
@@ -51,7 +73,12 @@ export function Sidebar({ items, onClose }: SidebarProps) {
                                 "w-5 h-5 transition-colors",
                                 isActive ? iconActiveColorClass : "text-primary/40 group-hover:text-primary"
                             )} />
-                            {item.label}
+                            <span className="flex-1">{item.label}</span>
+                            {isNotifications && unreadCount > 0 && (
+                                <span className="absolute right-3 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-black text-white animate-in zoom-in duration-300">
+                                    {unreadCount > 9 ? '9+' : unreadCount}
+                                </span>
+                            )}
                         </Link>
                     );
                 })}

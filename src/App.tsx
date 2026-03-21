@@ -35,74 +35,77 @@ import { CommunityLayout } from "./components/layout/CommunityLayout";
 
 import { AuthProvider } from "./context/AuthContext";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
+import { ToastProvider } from "./components/ui/Toast";
 
 function App() {
   return (
     <AuthProvider>
-      <NudgeProvider>
-        <Router>
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/auth/signup" element={<SignUp />} />
-            <Route path="/auth/signin" element={<SignIn />} />
-            <Route path="/auth/role-confirmation" element={<RoleConfirmation />} />
-            <Route path="/auth/governance-orientation" element={<GovernanceOrientation />} />
+      <ToastProvider>
+        <NudgeProvider>
+          <Router>
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/auth/signup" element={<SignUp />} />
+              <Route path="/auth/signin" element={<SignIn />} />
+              <Route path="/auth/role-confirmation" element={<RoleConfirmation />} />
+              <Route path="/auth/governance-orientation" element={<GovernanceOrientation />} />
 
-            <Route path="/member" element={
-              <ProtectedRoute allowedRoles={['MEMBER', 'FACILITATOR', 'CO_FACILITATOR']}>
-                <MemberLayout />
-              </ProtectedRoute>
-            }>
-              <Route path="home" element={<MemberHome />} />
-              <Route path="communities" element={<CommunityDirectory />} />
-              <Route path="profile" element={<MemberProfile />} />
-              <Route path="profile/:username" element={<MemberProfile />} />
-              <Route path="notifications" element={<MemberNotifications />} />
-              <Route path="moderation-history" element={<ModerationHistory />} />
-              <Route path="community/:id" element={<CommunityProfile />} />
-              <Route path="community/:id/apply" element={<CommunityApplication />} />
-            </Route>
+              <Route path="/member" element={
+                <ProtectedRoute allowedRoles={['MEMBER', 'FACILITATOR', 'CO_FACILITATOR']}>
+                  <MemberLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="home" element={<MemberHome />} />
+                <Route path="communities" element={<CommunityDirectory />} />
+                <Route path="profile" element={<MemberProfile />} />
+                <Route path="profile/:username" element={<MemberProfile />} />
+                <Route path="notifications" element={<MemberNotifications />} />
+                <Route path="moderation-history" element={<ModerationHistory />} />
+                <Route path="community/:id" element={<CommunityProfile />} />
+                <Route path="community/:id/apply" element={<CommunityApplication />} />
+              </Route>
 
-            {/* Community Specific Layout - Un-nested to avoid double headers */}
-            <Route path="/member/community/:id" element={
-              <ProtectedRoute allowedRoles={['MEMBER', 'FACILITATOR', 'CO_FACILITATOR']}>
-                <CommunityLayout />
-              </ProtectedRoute>
-            }>
-              <Route path="home" element={<CommunityHome />} />
-              <Route path="board/:boardId" element={<BoardView />} />
-              <Route path="board/:boardId/sub/:subBoardId" element={<SubBoardView />} />
-              <Route path="board/:boardId/sub/:subBoardId/create" element={<CreateDiscussion />} />
-              <Route path="discussion/:discussionId" element={<DiscussionDetail />} />
-            </Route>
+              {/* Community Specific Layout - Un-nested to avoid double headers */}
+              <Route path="/member/community/:id" element={
+                <ProtectedRoute allowedRoles={['MEMBER', 'FACILITATOR', 'CO_FACILITATOR']}>
+                  <CommunityLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="home" element={<CommunityHome />} />
+                <Route path="board/:boardId" element={<BoardView />} />
+                <Route path="board/:boardId/sub/:subBoardId" element={<SubBoardView />} />
+                <Route path="board/:boardId/sub/:subBoardId/create" element={<CreateDiscussion />} />
+                <Route path="discussion/:discussionId" element={<DiscussionDetail />} />
+              </Route>
 
-            <Route path="/facilitator" element={
-              <ProtectedRoute allowedRoles={['FACILITATOR', 'CO_FACILITATOR']}>
-                <FacilitatorLayout />
-              </ProtectedRoute>
-            }>
-              <Route path="home" element={<FacilitatorDashboard />} />
-              <Route path="communities" element={<CommunitiesList />} />
-              <Route path="profile" element={<FacilitatorProfile />} />
-              <Route path="notifications" element={<Notifications />} />
-              <Route path="moderation" element={<ModerationDashboard />} />
-              <Route path="members" element={<MembersManagement />} />
-              <Route path="rules" element={<RulesList />} />
-              <Route path="rules/create" element={<RuleBuilder />} />
-              <Route path="rules/:id/edit" element={<RuleBuilder />} />
-              <Route path="create-community" element={<CreateCommunity />} />
-              <Route path="community/:id/manage" element={<CommunityManagement />} />
-              <Route path="community/:id/moderation" element={<ModerationPanel />} />
-              <Route path="community/:id/board/:boardId" element={<BoardView />} />
-              <Route path="community/:id/board/:boardId/sub/:subBoardId" element={<SubBoardView />} />
-              <Route path="community/:id/discussion/:discussionId" element={<DiscussionDetail />} />
-              <Route path="community/:id/board/:boardId/sub/:subBoardId/create-thread" element={<CreateDiscussion />} />
-            </Route>
-            {/* Placeholder routes for future implementation */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Router>
-      </NudgeProvider>
+              <Route path="/facilitator" element={
+                <ProtectedRoute allowedRoles={['FACILITATOR', 'CO_FACILITATOR']}>
+                  <FacilitatorLayout />
+                </ProtectedRoute>
+              }>
+                <Route path="home" element={<FacilitatorDashboard />} />
+                <Route path="communities" element={<CommunitiesList />} />
+                <Route path="profile" element={<FacilitatorProfile />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="moderation" element={<ModerationDashboard />} />
+                <Route path="members" element={<MembersManagement />} />
+                <Route path="rules" element={<RulesList />} />
+                <Route path="rules/create" element={<RuleBuilder />} />
+                <Route path="rules/:id/edit" element={<RuleBuilder />} />
+                <Route path="create-community" element={<CreateCommunity />} />
+                <Route path="community/:id/manage" element={<CommunityManagement />} />
+                <Route path="community/:id/moderation" element={<ModerationPanel />} />
+                <Route path="community/:id/board/:boardId" element={<BoardView />} />
+                <Route path="community/:id/board/:boardId/sub/:subBoardId" element={<SubBoardView />} />
+                <Route path="community/:id/discussion/:discussionId" element={<DiscussionDetail />} />
+                <Route path="community/:id/board/:boardId/sub/:subBoardId/create-thread" element={<CreateDiscussion />} />
+              </Route>
+              {/* Placeholder routes for future implementation */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Router>
+        </NudgeProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }

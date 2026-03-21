@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { Input } from "../../components/ui/Input";
 import { CheckSquare } from "lucide-react";
 import { communityService } from "../../services/api";
+import { useToast } from "../../components/ui/Toast";
 
 // Mock data
 const communityQuestions = {
@@ -18,6 +19,7 @@ const communityQuestions = {
 export function CommunityApplication() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { showToast } = useToast();
     const questions = communityQuestions[Number(id) as keyof typeof communityQuestions] || ["Why do you want to join?"];
 
     const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -30,10 +32,11 @@ export function CommunityApplication() {
         setSubmitting(true);
         try {
             await communityService.joinCommunity(id!);
-            alert("Application submitted! Facilitators will review your request shortly.");
+            showToast("Application submitted! Facilitators will review your request shortly.", "success");
             navigate("/member/home");
         } catch (err: any) {
-            alert("Failed to submit application: " + (err.response?.data?.detail || "Unknown error"));
+            const msg = err.response?.data?.detail || "Unknown error";
+            showToast("Failed to submit application: " + msg, "error");
         } finally {
             setSubmitting(false);
         }
@@ -90,8 +93,8 @@ export function CommunityApplication() {
                         <Button type="button" variant="ghost" onClick={() => navigate(-1)}>
                             Cancel
                         </Button>
-                        <Button type="submit" disabled={!agreed || submitting}>
-                            {submitting ? "Submitting..." : "Submit Application"}
+                        <Button type="submit" disabled={!agreed} isLoading={submitting}>
+                            Submit Application
                         </Button>
                     </CardFooter>
                 </form>

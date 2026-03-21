@@ -3,15 +3,22 @@ import { Button } from "../../components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import { CheckCircle2, ShieldAlert } from "lucide-react";
 
+import { useState } from "react";
+import { useToast } from "../../components/ui/Toast";
+
 export function RoleConfirmation() {
     const [searchParams] = useSearchParams();
     const role = searchParams.get("role") || "member";
     const navigate = useNavigate();
     const location = useLocation();
+    const { showToast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
 
     const isFacilitator = role === "facilitator";
 
     const handleConfirm = () => {
+        setIsLoading(true);
+        showToast(`Role confirmed: ${role.toUpperCase()}. Proceeding to orientation.`, "success");
         navigate("/auth/governance-orientation?role=" + role, {
             state: location.state
         });
@@ -69,7 +76,7 @@ export function RoleConfirmation() {
                     <Button variant="ghost" onClick={() => navigate(-1)}>
                         Back
                     </Button>
-                    <Button onClick={handleConfirm} size="lg" className="flex-1">
+                    <Button onClick={handleConfirm} size="lg" className="flex-1" isLoading={isLoading}>
                         Confirm & Continue
                     </Button>
                 </CardFooter>

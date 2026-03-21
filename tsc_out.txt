@@ -1,0 +1,21 @@
+﻿src/components/features/AppealsUI.tsx(3,1): error TS6133: 'Button' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(28,12): error TS6133: 'submitting' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(29,12): error TS6133: 'message' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(50,11): error TS6133: 'handleAppealSubmit' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(77,11): error TS6133: 'appealableActions' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,18): error TS6133: 'ArrowRight' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,30): error TS6133: 'Activity' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,55): error TS6133: 'Users' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,69): error TS6133: 'UserCheck' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,86): error TS6133: 'ShieldCheck' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(7,26): error TS2307: Cannot find module '../../hooks/useToast' or its corresponding type declarations.
+src/pages/Facilitator/ModerationDashboard.tsx(98,30): error TS2304: Cannot find name 'Gavel'.
+src/pages/Facilitator/ModerationDashboard.tsx(112,53): error TS2607: JSX element class does not support attributes because it does not have a 'props' property.
+src/pages/Facilitator/ModerationDashboard.tsx(112,54): error TS2786: 'History' cannot be used as a JSX component.
+  Its type '{ new (): History; prototype: History; }' is not a valid JSX element type.
+    Type '{ new (): History; prototype: History; }' is not assignable to type 'new (props: any, context: any) => Component<any, any, any>'.
+      Type 'History' is missing the following properties from type 'Component<any, any, any>': context, setState, forceUpdate, render, props
+src/pages/Member/DirectMessages.tsx(2,1): error TS6192: All imports in import declaration are unused.
+src/pages/Member/ModerationHistory.tsx(5,15): error TS6133: 'governanceService' is declared but its value is never read.
+src/pages/Member/Profile.tsx(238,55): error TS2339: Property 'reputation_score' does not exist on type 'User'.
+src/pages/Member/Profile.tsx(248,64): error TS2339: Property 'reputation_score' does not exist on type 'User'.

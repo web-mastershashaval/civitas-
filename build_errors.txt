@@ -1,0 +1,9 @@
+﻿
+> temp-app@0.0.0 build
+> tsc -b && vite build
+
+src/pages/Member/DirectMessages.tsx(6,10): error TS2614: Module '"../../services/api"' has no exported member 'directMessageService'. Did you mean to use 'import directMessageService from "../../services/api"' instead?
+src/pages/Member/InviteJoin.tsx(7,10): error TS2724: '"../../services/api"' has no exported member named 'inviteService'. Did you mean 'voteService'?
+src/pages/Member/InviteJoin.tsx(30,20): error TS7006: Parameter 'res' implicitly has an 'any' type.
+src/pages/Member/InviteJoin.tsx(34,21): error TS7006: Parameter 'err' implicitly has an 'any' type.
+src/pages/Member/ModerationHistory.tsx(5,15): error TS6133: 'governanceService' is declared but its value is never read.

@@ -5,6 +5,7 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter }
 import { ArrowLeft, ArrowRight, Check, Loader2, Building2 } from "lucide-react";
 import { useCommunities } from "../../hooks/useCommunities"; // Use existing hook
 import api from "../../services/api";
+import { useToast } from "../../components/ui/Toast";
 
 // Step 1: Problem categories
 const problemCategories = [
@@ -40,6 +41,7 @@ export function RuleBuilder() {
     const navigate = useNavigate();
     const { id: _editId } = useParams(); // For edit mode if needed (prefixed with _ to ignore lint)
     const { communities, loading: loadingCommunities } = useCommunities(true); // Fetch managed communities
+    const { showToast } = useToast();
 
     const [step, setStep] = useState(1);
     const [submitting, setSubmitting] = useState(false);
@@ -79,11 +81,10 @@ export function RuleBuilder() {
 
         setSubmitting(true);
         try {
-            // Map frontend consequence to backend enforcement
+            // ... (rest of logic)
             const enforcementType = ruleData.consequence.includes("mute") ? "MUTE" :
                 ruleData.consequence.includes("Remove") ? "BLOCK" : "WARN";
 
-            // Map category to backend action
             const actionMap: Record<string, string> = {
                 "Harassment & abuse": "RESPOND",
                 "Spam & promotions": "CREATE_DISCUSSION",
@@ -115,10 +116,12 @@ export function RuleBuilder() {
             };
 
             await api.post('/rules/', payload);
+            showToast("Governance rule established and active.", "success");
             navigate("/facilitator/rules");
         } catch (error: any) {
             console.error("Failed to create rule:", error);
-            alert("Failed to create rule. Please try again.");
+            const msg = error.response?.data?.detail || "Failed to create rule. Please try again.";
+            showToast(msg, "error");
         } finally {
             setSubmitting(false);
         }
@@ -382,19 +385,11 @@ export function RuleBuilder() {
                         <Button
                             onClick={handleSubmit}
                             disabled={submitting}
+                            isLoading={submitting}
                             className="bg-[#4f8cff] hover:bg-[#4f8cff]/90 text-white font-black uppercase tracking-widest text-[10px] h-10 px-8 rounded-none shadow-lg shadow-[#4f8cff]/20"
                         >
-                            {submitting ? (
-                                <>
-                                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                                    Creating Rule...
-                                </>
-                            ) : (
-                                <>
-                                    <Check className="w-4 h-4 mr-2" />
-                                    Create Rule
-                                </>
-                            )}
+                            <Check className="w-4 h-4 mr-2" />
+                            Create Rule
                         </Button>
                     )}
                 </CardFooter>

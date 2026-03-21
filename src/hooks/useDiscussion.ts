@@ -26,13 +26,17 @@ export function useDiscussion(discussionId: string | undefined) {
         fetchDiscussion();
     }, [discussionId]);
 
-    const submitResponse = async (type: string, content: string) => {
+    const submitResponse = async (type: string, content: string, image?: File) => {
         try {
-            await ledgerService.createResponse({
-                discussion: discussionId,
-                type,
-                content
-            });
+            const formData = new FormData();
+            formData.append('discussion', discussionId || '');
+            formData.append('type', type);
+            formData.append('content', content);
+            if (image) {
+                formData.append('image', image);
+            }
+
+            await ledgerService.createResponse(formData);
             await fetchDiscussion(); // Refresh ledger
             return { success: true };
         } catch (err: any) {

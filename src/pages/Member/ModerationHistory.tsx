@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader } from "../../components/ui/Card";
 import { Button } from "../../components/ui/Button";
 import { Shield, AlertTriangle, Clock, Trash2, ArrowRight, MessageSquare, History } from "lucide-react";
-import api, { governanceService } from "../../services/api";
+import api from "../../services/api";
 import AppealForm from "../../components/features/AppealForm";
 
 interface ModerationAction {

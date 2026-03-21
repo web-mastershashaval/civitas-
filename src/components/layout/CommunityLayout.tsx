@@ -2,9 +2,10 @@ import { useParams, Link, useLocation, Outlet, useOutletContext } from "react-ro
 import { Button } from "../ui/Button";
 import { cn } from "../../lib/utils";
 import { useCommunity } from "../../hooks/useCommunity";
-import { Loader2, Shield, ChevronRight, Home, LayoutGrid } from "lucide-react";
+import { Loader2, Shield, ChevronRight, Home, LayoutGrid, Bell } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../context/AuthContext";
+import api from "../../services/api";
 
 interface BreadcrumbItem {
     label: string;
@@ -27,6 +28,24 @@ export function CommunityLayout() {
     const { community, loading } = useCommunity(id);
     const [breadcrumbs, setBreadcrumbs] = useState<BreadcrumbItem[]>([]);
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [unreadCount, setUnreadCount] = useState(0);
+
+    useEffect(() => {
+        const fetchUnreadCount = async () => {
+            try {
+                const res = await api.get('/notifications/unread_count/');
+                setUnreadCount(res.data.count);
+            } catch (err: any) {
+                console.error("Failed to fetch unread count", err);
+            }
+        };
+
+        if (user) {
+            fetchUnreadCount();
+            const interval = setInterval(fetchUnreadCount, 30000);
+            return () => clearInterval(interval);
+        }
+    }, [user]);
 
     useEffect(() => {
         // Reset breadcrumbs on route change to prevent stale paths
@@ -88,6 +107,14 @@ export function CommunityLayout() {
                 </div>
 
                 <div className="flex items-center gap-2 md:gap-3">
+                    <Link to="/member/notifications" className="relative p-2 text-[#9aa0a6] hover:text-[#4f8cff] transition-colors group">
+                        <Bell className="w-5 h-5" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1 right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-black text-white animate-pulse">
+                                {unreadCount > 9 ? '9+' : unreadCount}
+                            </span>
+                        )}
+                    </Link>
                     <Button variant="ghost" className="hidden sm:flex text-[9px] md:text-xs uppercase tracking-widest font-bold text-[#9aa0a6] hover:text-[#e6e6e6] border border-[#2a2f3a] h-8 px-2 md:px-3">
                         Rules
                     </Button>

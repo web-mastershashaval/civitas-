@@ -5,10 +5,14 @@ import { Input } from "../../components/ui/Input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
 import { ArrowLeft } from "lucide-react";
 
+import { useToast } from "../../components/ui/Toast";
+
 export function SignUp() {
     const [searchParams] = useSearchParams();
     const role = searchParams.get("role") || "member";
     const navigate = useNavigate();
+    const { showToast } = useToast();
+    const [isLoading, setIsLoading] = useState(false);
 
     const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
@@ -16,6 +20,8 @@ export function SignUp() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        setIsLoading(true);
+        showToast("Profile preliminary data captured. Proceeding to role confirmation.", "success");
         // Pass data to confirmation step via location state
         navigate("/auth/role-confirmation?role=" + role, {
             state: { username, email, password, role }
@@ -81,7 +87,7 @@ export function SignUp() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col space-y-4">
-                        <Button type="submit" className="w-full">
+                        <Button type="submit" className="w-full" isLoading={isLoading}>
                             Continue
                         </Button>
                         <div className="text-sm text-center text-primary/60">

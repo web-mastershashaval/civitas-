@@ -3,6 +3,7 @@ import { Button } from '../ui/Button';
 import { Card, CardContent, CardHeader } from '../ui/Card';
 import { governanceService } from '../../services/api';
 import { Shield, AlertTriangle, Clock, Trash2, Send } from 'lucide-react';
+import { useToast } from '../ui/Toast';
 
 interface ModerationActionFormProps {
     targetUserId: string;
@@ -19,6 +20,7 @@ const ModerationActionForm: React.FC<ModerationActionFormProps> = ({
     objectId,
     onActionCompleted
 }) => {
+    const { showToast } = useToast();
     const [action, setAction] = useState<'WARN' | 'MUTE' | 'REMOVE' | 'RESTRICT'>('WARN');
     const [reason, setReason] = useState('');
     const [ruleId, setRuleId] = useState('');
@@ -43,10 +45,13 @@ const ModerationActionForm: React.FC<ModerationActionFormProps> = ({
                 duration: action === 'MUTE' ? duration : undefined
             });
 
+            showToast(`Protocol enforced against ${targetUsername}.`, "success");
             setSuccess(true);
             if (onActionCompleted) onActionCompleted();
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Failed to issue moderation action.');
+            const detail = err.response?.data?.detail || 'Failed to issue moderation action.';
+            showToast(detail, "error");
+            setError(detail);
         } finally {
             setLoading(false);
         }
@@ -166,8 +171,9 @@ const ModerationActionForm: React.FC<ModerationActionFormProps> = ({
                         type="submit"
                         disabled={loading}
                         className="w-full bg-[#4f8cff] hover:bg-[#4f8cff]/90 text-white font-black uppercase tracking-[0.2em] text-[10px] h-12"
+                        isLoading={loading}
                     >
-                        {loading ? "ENFORCING PROTOCOL..." : "EXECUTE ACTION"}
+                        EXECUTE ACTION
                         <Send className="w-4 h-4 ml-2" />
                     </Button>
                 </form>

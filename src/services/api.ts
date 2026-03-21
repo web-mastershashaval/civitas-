@@ -131,6 +131,7 @@ export const ledgerService = {
 
 export const notificationService = {
     getNotifications: () => api.get('/notifications/'),
+    getUnreadCount: () => api.get('/notifications/unread_count/'),
     markAsRead: (id: string) => api.post(`/notifications/${id}/mark_as_read/`),
     markAllAsRead: () => api.post('/notifications/mark_all_as_read/'),
 };
@@ -163,6 +164,18 @@ export const governanceService = {
 export const voteService = {
     castVote: (contentType: 'DISCUSSION' | 'RESPONSE', objectId: string, voteType: 'UP' | 'DOWN') => 
         api.post('/votes/', { content_type: contentType, object_id: objectId, vote_type: voteType }),
+};
+
+export const directMessageService = {
+    getConversations: () => api.get('/direct-messages/conversations/'),
+    getMessages: (otherUserId: string) => api.get(`/direct-messages/?other_user=${otherUserId}`),
+    sendMessage: (receiverId: string, content: string) => api.post('/direct-messages/', { receiver: receiverId, content }),
+    markAsRead: (otherUserId: string) => api.post(`/direct-messages/mark_as_read/`, { other_user: otherUserId }),
+};
+
+export const inviteService = {
+    checkInvite: (code: string) => api.get(`/invites/${code}/`),
+    joinViaInvite: (code: string, age: number, intent: string) => api.post(`/invites/${code}/join/`, { age, intent }),
 };
 
 export default api;

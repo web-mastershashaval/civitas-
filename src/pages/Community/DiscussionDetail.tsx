@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, Link, useLocation } from "react-router-dom";
-import { ShieldCheck, AlertCircle, Loader2, ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { ShieldCheck, AlertCircle, Loader2, ArrowBigUp, ArrowBigDown, Plus, X } from "lucide-react";
 import { Button } from "../../components/ui/Button";
 import ReportButton from "../../components/features/ReportButton";
 import { useDiscussion } from "../../hooks/useDiscussion";
@@ -40,6 +40,9 @@ export function DiscussionDetail() {
     const [responseType, setResponseType] = useState(isFacilitatorMode ? "Facilitator Intervention" : "Clarification");
     const [responseContent, setResponseContent] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [replyTo, setReplyTo] = useState<{username: string} | null>(null);
+    const [imageFile, setImageFile] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const handleInteraction = (type: string) => {
         setResponseType(type);
@@ -55,23 +58,43 @@ export function DiscussionDetail() {
         try {
             await voteService.castVote(contentType, objectId, voteType);
             refresh(); // Refresh to get updated counts
-        } catch (err) {
+        } catch (err: any) {
             addNudge("Voting failed. Your reputation might be too low or session expired.", "error");
         }
     };
 
     const handleSubmitResponse = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!responseContent.trim()) return;
+        if (!responseContent.trim() && !imageFile) return;
 
         setIsSubmitting(true);
-        const result = await submitResponse(responseType, responseContent);
+        const finalContent = replyTo ? `@${replyTo.username} ${responseContent}` : responseContent;
+        const result = await submitResponse(responseType, finalContent, imageFile || undefined);
         if (result.success) {
             setResponseContent("");
+            setReplyTo(null);
+            setImageFile(null);
+            setImagePreview(null);
         } else {
             addNudge(result.error || "Action Blocked by Governance Engine.", "error");
         }
         setIsSubmitting(false);
+    };
+
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > 5 * 1024 * 1024) {
+                addNudge("File too large. Max 5MB allowed.", "error");
+                return;
+            }
+            setImageFile(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const renderContentWithMentions = (content: string) => {
@@ -118,6 +141,8 @@ export function DiscussionDetail() {
         );
     }
 
+    const isAnnouncement = discussion.boardName === 'Announcements';
+
     return (
         <div className="space-y-8 animate-in fade-in duration-500">
             {isFacilitatorMode && (
@@ -143,7 +168,7 @@ export function DiscussionDetail() {
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-sm text-[#9aa0a6] mb-8 pb-8 border-b border-[#2a2f3a]">
                     <div className="flex items-center gap-3 md:gap-4">
                         {discussion.author_avatar ? (
-                            <img src={discussion.author_avatar} alt={discussion.author} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-[#4f8cff]/30 shadow-lg shadow-[#4f8cff]/5" />
+                            <img src={discussion.author_avatar} alt={discussion.author_username || discussion.author} className="w-8 h-8 md:w-10 md:h-10 rounded-full border-2 border-[#4f8cff]/30 shadow-lg shadow-[#4f8cff]/5" />
                         ) : (
                             <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-[#4f8cff]/10 flex items-center justify-center border-2 border-[#4f8cff]/30 shadow-lg shadow-[#4f8cff]/5">
                                 <span className="text-xs md:text-sm font-black text-[#4f8cff]">{discussion.author[0].toUpperCase()}</span>
@@ -151,7 +176,7 @@ export function DiscussionDetail() {
                         )}
                         <div>
                             <Link to={`/member/profile/${discussion.author}`} className="font-bold text-[#e6e6e6] hover:text-[#4f8cff] transition-colors underline-offset-4 hover:underline text-sm md:text-base">
-                                {discussion.author}
+                                {discussion.author_username || discussion.author}
                             </Link>
                             <div className="flex items-center gap-2 text-[9px] md:text-[10px] mt-0.5">
                                 <span>{discussion.timestamp}</span>
@@ -218,7 +243,7 @@ export function DiscussionDetail() {
 
             {/* Interaction Controls */}
             <div className="flex gap-2 items-center flex-wrap">
-                {[
+                {discussion && !isAnnouncement && [
                     { label: "Endorse", type: "Endorsement" },
                     { label: "Challenge", type: "Challenge" },
                     { label: "Clarify", type: "Clarification" }
@@ -274,15 +299,15 @@ export function DiscussionDetail() {
                                 <div className="flex items-center gap-3">
                                     <div className="flex items-center gap-2 md:gap-3">
                                         {response.author_avatar ? (
-                                            <img src={response.author_avatar} alt={response.author} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[#2a2f3a] shadow-sm" />
+                                            <img src={response.author_avatar} alt={response.author_username || response.author} className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-[#2a2f3a] shadow-sm" />
                                         ) : (
                                             <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-[#2a2f3a] flex items-center justify-center border border-[#2a2f3a] shadow-sm">
-                                                <span className="text-[10px] font-black">{response.author[0].toUpperCase()}</span>
+                                                <span className="text-[10px] font-black">{(response.author_username || response.author)[0].toUpperCase()}</span>
                                             </div>
                                         )}
                                         <div className="flex flex-col">
                                             <Link to={`/member/profile/${response.author}`} className="text-[#e6e6e6] font-bold hover:text-[#4f8cff] hover:underline transition-colors text-[10px] md:text-[11px] truncate max-w-[100px] md:max-w-none">
-                                                {response.author}
+                                                {response.author_username || response.author}
                                             </Link>
                                             <span className="text-[8px] opacity-60">{response.timestamp}</span>
                                         </div>
@@ -292,6 +317,12 @@ export function DiscussionDetail() {
                              <div className={`${response.isOfficial ? 'text-[#f0b429]/90' : 'text-[#e6e6e6]'} text-xs md:text-sm leading-relaxed whitespace-pre-wrap break-words`}>
                                 {renderContentWithMentions(response.content)}
                             </div>
+
+                            {response.image && (
+                                <div className="mt-4 relative max-w-[300px] overflow-hidden rounded-md border border-[#2a2f3a] bg-black/20 group-hover:border-[#4f8cff]/30 transition-colors">
+                                    <img src={response.image} alt="Response attachment" className="w-full h-auto object-contain cursor-zoom-in" onClick={() => window.open(response.image, '_blank')} />
+                                </div>
+                            )}
 
                             {/* Response Votes */}
                             <div className="mt-4 flex items-center gap-2">
@@ -311,45 +342,50 @@ export function DiscussionDetail() {
                                 </button>
                             </div>
 
-                            <div className="mt-4 flex flex-wrap gap-3 md:gap-4 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-                                <button className={`text-[8px] md:text-[9px] uppercase tracking-widest font-black ${response.isOfficial ? 'text-[#f0b429]' : 'text-[#4f8cff]'} hover:text-[#e6e6e6] transition-colors`} onClick={() => {
-                                    setResponseContent(`@${response.author} `);
-                                    handleInteraction("Clarification");
-                                }}>
-                                    Reply
-                                </button>
-                                <button
-                                    className="text-[8px] md:text-[9px] uppercase tracking-widest font-black text-[#9aa0a6] hover:text-[#e6e6e6] transition-colors"
-                                    onClick={() => {
-                                        setResponseContent(`@${response.author} [Challenging assertion]: `);
-                                        handleInteraction("Challenge");
-                                    }}
-                                >
-                                    Challenge
-                                </button>
-                                <button
-                                    className="text-[8px] md:text-[9px] uppercase tracking-widest font-black text-[#9aa0a6] hover:text-[#e6e6e6] transition-colors"
-                                    onClick={() => {
-                                        setResponseContent(`@${response.author} [Endorsing contribution]: `);
-                                        handleInteraction("Endorsement");
-                                    }}
-                                >
-                                    Agree
-                                </button>
-                                <div className="ml-auto">
-                                    <ReportButton
-                                        contentType="RESPONSE"
-                                        objectId={response.id}
-                                    />
+                            {discussion && !isAnnouncement && (
+                                <div className="mt-4 flex flex-wrap gap-3 md:gap-4 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+                                    <button className={`text-[8px] md:text-[9px] uppercase tracking-widest font-black ${response.isOfficial ? 'text-[#f0b429]' : 'text-[#4f8cff]'} hover:text-[#e6e6e6] transition-colors`} onClick={() => {
+                                        setReplyTo({ username: response.author_username || response.author });
+                                        handleInteraction("Clarification");
+                                    }}>
+                                        Reply
+                                    </button>
+                                    <button
+                                        className="text-[8px] md:text-[9px] uppercase tracking-widest font-black text-[#9aa0a6] hover:text-[#e6e6e6] transition-colors"
+                                        onClick={() => {
+                                            setReplyTo({ username: response.author_username || response.author });
+                                            setResponseContent("[Challenging assertion]: ");
+                                            handleInteraction("Challenge");
+                                        }}
+                                    >
+                                        Challenge
+                                    </button>
+                                    <button
+                                        className="text-[8px] md:text-[9px] uppercase tracking-widest font-black text-[#9aa0a6] hover:text-[#e6e6e6] transition-colors"
+                                        onClick={() => {
+                                            setReplyTo({ username: response.author_username || response.author });
+                                            setResponseContent("[Endorsing contribution]: ");
+                                            handleInteraction("Endorsement");
+                                        }}
+                                    >
+                                        Agree
+                                    </button>
+                                    <div className="ml-auto">
+                                        <ReportButton
+                                            contentType="RESPONSE"
+                                            objectId={response.id}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
+                            )}
                         </div>
                     </article>
                 ))}
             </div>
 
             {/* Add Response Form */}
-            <div id="commit-form" className={`border ${isFacilitatorMode ? 'border-[#f0b429]/30' : 'border-[#2a2f3a]'} bg-[#0f1115] p-6 md:p-8 mt-12 bg-gradient-to-b from-[#161a20] to-[#0f1115]`}>
+            {discussion && !isAnnouncement && (
+                <div id="commit-form" className={`border ${isFacilitatorMode ? 'border-[#f0b429]/30' : 'border-[#2a2f3a]'} bg-[#0f1115] p-6 md:p-8 mt-12 bg-gradient-to-b from-[#161a20] to-[#0f1115]`}>
                 <h3 className="text-xs md:text-sm uppercase tracking-[0.2em] font-black text-[#e6e6e6] mb-6">
                     {isFacilitatorMode ? "Exercise System Authority" : "Commit Response"}
                 </h3>
@@ -382,21 +418,61 @@ export function DiscussionDetail() {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <label className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold text-[#9aa0a6]">Directive Content</label>
-                        <textarea
-                            className={`w-full bg-[#161a20] border ${isFacilitatorMode ? 'border-[#f0b429]/20' : 'border-[#2a2f3a]'} rounded-sm p-4 text-xs md:text-sm text-[#e6e6e6] focus:outline-none focus:border-[#4f8cff]/50 min-h-[120px]`}
-                            placeholder={isFacilitatorMode ? "Enter official ruling or intervention details..." : "Provide your contribution to the charter..."}
-                            value={responseContent}
-                            onChange={(e) => setResponseContent(e.target.value)}
-                            required
-                        />
+                    <div className="space-y-2 relative">
+                        <div className="flex justify-between items-center">
+                            <label className="text-[9px] md:text-[10px] uppercase tracking-widest font-bold text-[#9aa0a6]">Directive Content</label>
+                            {replyTo && (
+                                <div className="flex items-center gap-2 bg-[#4f8cff]/10 border border-[#4f8cff]/20 px-2 py-1 rounded-sm">
+                                    <span className="text-[8px] md:text-[9px] uppercase font-black text-[#4f8cff]">Replying to @{replyTo.username}</span>
+                                    <button 
+                                        type="button"
+                                        onClick={() => setReplyTo(null)}
+                                        className="text-[#4f8cff] hover:text-white transition-colors"
+                                    >
+                                        <X className="w-3 h-3" />
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                        <div className="relative">
+                            <textarea
+                                className={`w-full bg-[#161a20] border ${isFacilitatorMode ? 'border-[#f0b429]/20' : 'border-[#2a2f3a]'} rounded-sm p-4 pr-12 text-xs md:text-sm text-[#e6e6e6] focus:outline-none focus:border-[#4f8cff]/50 min-h-[120px]`}
+                                placeholder={isFacilitatorMode ? "Enter official ruling or intervention details..." : "Provide your contribution to the charter..."}
+                                value={responseContent}
+                                onChange={(e) => setResponseContent(e.target.value)}
+                                required={!imageFile}
+                            />
+                            <div className="absolute right-3 bottom-3">
+                                <label className="cursor-pointer p-2 rounded-full bg-[#2a2f3a] hover:bg-[#4f8cff]/20 text-[#9aa0a6] hover:text-[#4f8cff] transition-all flex items-center justify-center border border-[#2a2f3a] hover:border-[#4f8cff]/30">
+                                    <Plus className="w-4 h-4" />
+                                    <input 
+                                        type="file" 
+                                        className="hidden" 
+                                        accept="image/*"
+                                        onChange={handleImageChange}
+                                    />
+                                </label>
+                            </div>
+                        </div>
+
+                        {imagePreview && (
+                            <div className="relative mt-2 w-24 h-24 border border-[#4f8cff]/30 rounded-sm overflow-hidden group">
+                                <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
+                                <button 
+                                    type="button"
+                                    onClick={() => { setImageFile(null); setImagePreview(null); }}
+                                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-0.5 opacity-0 group-hover:opacity-100 transition-opacity"
+                                >
+                                    <X className="w-3 h-3" />
+                                </button>
+                            </div>
+                        )}
                     </div>
 
                     <Button
                         type="submit"
                         className={`${isFacilitatorMode ? 'bg-[#f0b429] hover:bg-[#f0b429]/90' : 'bg-[#4f8cff] hover:bg-[#4f8cff]/90'} text-black font-black uppercase tracking-[0.2em] text-[9px] md:text-[10px] h-10 md:h-12 w-full max-w-none md:max-w-[240px] rounded-none shadow-lg shadow-black/20`}
-                        disabled={isSubmitting || !responseContent.trim()}
+                        disabled={isSubmitting || (!responseContent.trim() && !imageFile)}
                     >
                         {isSubmitting ? (
                             <>
@@ -409,6 +485,7 @@ export function DiscussionDetail() {
                     </Button>
                 </form>
             </div>
+            )}
         </div>
     );
 }

@@ -125,6 +125,7 @@ class Response(models.Model):
     is_official = models.BooleanField(default=False)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     discussion = models.ForeignKey(Discussion, on_delete=models.CASCADE, related_name='responses')
+    image = models.ImageField(upload_to='response_images/', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
 class Rule(models.Model):

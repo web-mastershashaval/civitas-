@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useSearchParams, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import api from "../../services/api";
+import { useToast } from "../../components/ui/Toast";
 
 export function GovernanceOrientation() {
     const [searchParams] = useSearchParams();
     const role = searchParams.get("role") || "member";
     const navigate = useNavigate();
+    const { showToast } = useToast();
 
     const [error, setError] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +30,7 @@ export function GovernanceOrientation() {
                 if (token) {
                     // Scenario A: Existing user completing orientation
                     await api.post("/users/complete_orientation/");
+                    showToast("Orientation complete. Welcome to the community.", "success");
                     const role = localStorage.getItem('civitas_role')?.toLowerCase() || 'member';
                     navigate(role === 'facilitator' ? '/facilitator/home' : '/member/home');
                 } else if (signupData) {
@@ -39,6 +42,7 @@ export function GovernanceOrientation() {
                         role: signupData.role.toUpperCase() === 'FACILITATOR' ? 'FACILITATOR' : 'MEMBER'
                     });
 
+                    showToast("Identity established. Please verify to enter.", "success");
                     navigate("/auth/signin", {
                         state: { message: "Access granted. Please verify your identity to enter." }
                     });
@@ -50,9 +54,8 @@ export function GovernanceOrientation() {
 
                 // Extract error message from DRF response
                 let errorMessage = "Registration failed. Identity could not be established.";
-
+                // ... (rest of error handling)
                 if (err.response?.data) {
-                    // DRF field validation errors come as {field: [error1, error2]}
                     const data = err.response.data;
                     if (data.username) {
                         errorMessage = Array.isArray(data.username) ? data.username[0] : data.username;
@@ -60,21 +63,10 @@ export function GovernanceOrientation() {
                         errorMessage = Array.isArray(data.email) ? data.email[0] : data.email;
                     } else if (data.detail) {
                         errorMessage = data.detail;
-                    } else if (typeof data === 'string') {
-                        errorMessage = data;
-                    } else {
-                        // Get first error from any field
-                        const firstField = Object.keys(data)[0];
-                        if (firstField) {
-                            const fieldError = data[firstField];
-                            errorMessage = Array.isArray(fieldError) ? fieldError[0] : fieldError;
-                        }
                     }
-                } else if (err.message) {
-                    errorMessage = err.message;
                 }
-
                 setError(errorMessage);
+                showToast(errorMessage, "error");
             } finally {
                 setIsLoading(false);
             }
@@ -230,10 +222,11 @@ export function GovernanceOrientation() {
                     <Button
                         className={`h-11 px-8 font-semibold transition-all ${consent1 && consent2 ? "bg-[#4f8cff] text-white opacity-100" : "bg-[#4f8cff] text-white opacity-40 cursor-not-allowed"
                             }`}
-                        disabled={!consent1 || !consent2 || isLoading}
+                        disabled={!consent1 || !consent2}
                         onClick={handleContinue}
+                        isLoading={isLoading}
                     >
-                        {isLoading ? "Establishing Identity..." : "Accept & Continue"}
+                        Accept & Continue
                     </Button>
                 </section>
             </div>

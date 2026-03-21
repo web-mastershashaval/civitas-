@@ -190,13 +190,13 @@ export function SubBoardView() {
                                 </span>
                                 <div className="flex items-center gap-2 text-[8px] md:text-[9px] text-[#9aa0a6] uppercase tracking-widest font-bold">
                                     {discussion.author_avatar ? (
-                                        <img src={discussion.author_avatar} alt={discussion.author} className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full border border-[#2a2f3a]" />
+                                        <img src={discussion.author_avatar} alt={discussion.author_username || discussion.author} className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full border border-[#2a2f3a]" />
                                     ) : (
                                         <div className="w-3.5 h-3.5 md:w-4 md:h-4 rounded-full bg-[#2a2f3a] flex items-center justify-center">
                                             <span className="text-[6px] font-black">{discussion.author[0].toUpperCase()}</span>
                                         </div>
                                     )}
-                                    <span className="truncate">{discussion.author} • {discussion.timestamp || "Active"}</span>
+                                    <span className="truncate">{discussion.author_username || discussion.author} • {discussion.timestamp || "Active"}</span>
                                 </div>
                             </div>
                         </article>

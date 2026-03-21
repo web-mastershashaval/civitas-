@@ -4,11 +4,13 @@ import { Button } from "../../components/ui/Button";
 import { ArrowLeft, ShieldAlert, BarChart3, Info, Loader2, Camera, X } from "lucide-react";
 import { useNudge } from "../../components/features/NudgeProvider";
 import api, { ledgerService } from "../../services/api";
+import { useToast } from "../../components/ui/Toast";
 
 export function CreateDiscussion() {
     const { id, boardId, subBoardId } = useParams();
     const navigate = useNavigate();
     const location = useLocation();
+    const { showToast } = useToast();
     const isFacilitatorMode = location.pathname.includes('/facilitator');
 
     const [context, setContext] = useState<any>(null);
@@ -104,12 +106,12 @@ export function CreateDiscussion() {
 
             await ledgerService.createDiscussion(submissionData);
 
-            addNudge(
-                isFacilitatorMode
-                    ? "AUTHORITY VERIFIED: Your system directive has been committed to the ledger."
-                    : "Success: Your contribution has been recorded and is now bound by the community governance rules.",
-                "info"
-            );
+            const successMsg = isFacilitatorMode
+                ? "AUTHORITY VERIFIED: Your system directive has been committed to the ledger."
+                : "Success: Your contribution has been recorded and is now bound by the community governance rules.";
+
+            showToast(successMsg, "success");
+            addNudge(successMsg, "info");
 
             setTimeout(() => {
                 const redirectPath = isFacilitatorMode
@@ -119,6 +121,7 @@ export function CreateDiscussion() {
             }, 1500);
         } catch (err: any) {
             const detail = err.response?.data?.detail || "Action Blocked by Governance Engine.";
+            showToast(detail, "error");
             addNudge(detail, "error", true);
         } finally {
             setIsSubmitting(false);
@@ -288,9 +291,10 @@ export function CreateDiscussion() {
                             backgroundColor: isFacilitatorMode ? '#f0b429' : '#4f8cff',
                             color: isFacilitatorMode ? '#000' : '#fff'
                         }}
-                        disabled={isSubmitting || !formData.title || !formData.mainContent}
+                        disabled={!formData.title || !formData.mainContent}
+                        isLoading={isSubmitting}
                     >
-                        {isSubmitting ? "Posting..." : (isFacilitatorMode ? "Post Announcement" : "Create Thread")}
+                        {isFacilitatorMode ? "Post Announcement" : "Create Thread"}
                     </Button>
                 </div>
 

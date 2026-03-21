@@ -1,0 +1,285 @@
+﻿python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python manage.py 
+check *>&1 | Out-File 
+-Encoding utf8 out.txt
++ ~~~~~~~~~~~~~~~~~~~~~
+~~~~~~
+    + CategoryInfo     
+         : NotSpecifi  
+  ed: (Traceback (mo   
+ st recent call las    
+t)::String) [], Re    
+moteException
+    + FullyQualifiedEr 
+   rorId : NativeComm  
+  andError
+ 
+  File "C:\Users\ADMIN\
+civitas\backend\manage.
+py", line 22, in 
+<module>
+    main()
+    ~~~~^^
+  File "C:\Users\ADMIN\
+civitas\backend\manage.
+py", line 18, in main
+    execute_from_comman
+d_line(sys.argv)
+    ~~~~~~~~~~~~~~~~~~~
+~~~~~~^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\management
+\__init__.py", line 
+442, in execute_from_co
+mmand_line
+    utility.execute()
+    ~~~~~~~~~~~~~~~^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\management
+\__init__.py", line 
+436, in execute
+    self.fetch_command(
+subcommand).run_from_ar
+gv(self.argv)
+    ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~
+~~^^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\management
+\base.py", line 416, 
+in run_from_argv
+    
+self.execute(*args, 
+**cmd_options)
+    ~~~~~~~~~~~~^^^^^^^
+^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\management
+\base.py", line 460, 
+in execute
+    output = 
+self.handle(*args, 
+**options)
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\management
+\commands\check.py", 
+line 81, in handle
+    self.check(
+    ~~~~~~~~~~^
+        app_configs=app
+_configs,
+        ^^^^^^^^^^^^^^^
+^^^^^^^^^
+    ...<4 lines>...
+        databases=optio
+ns["databases"],
+        ^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\management
+\base.py", line 492, 
+in check
+    all_issues = 
+checks.run_checks(
+        app_configs=app
+_configs,
+    ...<2 lines>...
+        
+databases=databases,
+    )
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\checks\reg
+istry.py", line 89, in 
+run_checks
+    new_errors = check(
+app_configs=app_configs
+, databases=databases)
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\checks\url
+s.py", line 16, in 
+check_url_config
+    return check_resolv
+er(resolver)
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\core\checks\url
+s.py", line 26, in 
+check_resolver
+    return 
+check_method()
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\urls\resolvers.
+py", line 531, in check
+    for pattern in 
+self.url_patterns:
+                   
+^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\utils\functiona
+l.py", line 47, in 
+__get__
+    res = instance.__di
+ct__[self.name] = 
+self.func(instance)
+                       
+                  
+~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\urls\resolvers.
+py", line 718, in 
+url_patterns
+    patterns = getattr(
+self.urlconf_module, 
+"urlpatterns", 
+self.urlconf_module)
+                       
+^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\utils\functiona
+l.py", line 47, in 
+__get__
+    res = instance.__di
+ct__[self.name] = 
+self.func(instance)
+                       
+                  
+~~~~~~~~~^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\urls\resolvers.
+py", line 711, in 
+urlconf_module
+    return import_modul
+e(self.urlconf_name)
+  File "C:\Python313\Li
+b\importlib\__init__.py
+", line 88, in 
+import_module
+    return _bootstrap._
+gcd_import(name[level:]
+, package, level)
+           ~~~~~~~~~~~~
+~~~~~~~~~~^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
+  File "<frozen importl
+ib._bootstrap>", line 
+1387, in _gcd_import
+  File "<frozen importl
+ib._bootstrap>", line 
+1360, in _find_and_load
+  File "<frozen importl
+ib._bootstrap>", line 
+1331, in 
+_find_and_load_unlocked
+  File "<frozen importl
+ib._bootstrap>", line 
+935, in _load_unlocked
+  File "<frozen importl
+ib._bootstrap_external>
+", line 1026, in 
+exec_module
+  File "<frozen importl
+ib._bootstrap>", line 
+488, in _call_with_fram
+es_removed
+  File "C:\Users\ADMIN\
+civitas\backend\core\ur
+ls.py", line 15, in 
+<module>
+    path('api/', includ
+e('governance.urls')),
+                 ~~~~~~
+~^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\ADMIN\
+AppData\Roaming\Python\
+Python313\site-packages
+\django\urls\conf.py", 
+line 39, in include
+    urlconf_module = im
+port_module(urlconf_mod
+ule)
+  File "C:\Python313\Li
+b\importlib\__init__.py
+", line 88, in 
+import_module
+    return _bootstrap._
+gcd_import(name[level:]
+, package, level)
+           ~~~~~~~~~~~~
+~~~~~~~~~~^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^
+  File "<frozen importl
+ib._bootstrap>", line 
+1387, in _gcd_import
+  File "<frozen importl
+ib._bootstrap>", line 
+1360, in _find_and_load
+  File "<frozen importl
+ib._bootstrap>", line 
+1331, in 
+_find_and_load_unlocked
+  File "<frozen importl
+ib._bootstrap>", line 
+935, in _load_unlocked
+  File "<frozen importl
+ib._bootstrap_external>
+", line 1026, in 
+exec_module
+  File "<frozen importl
+ib._bootstrap>", line 
+488, in _call_with_fram
+es_removed
+  File "C:\Users\ADMIN\
+civitas\backend\governa
+nce\urls.py", line 3, 
+in <module>
+    from .views import 
+(
+    ...<6 lines>...
+    )
+  File "C:\Users\ADMIN\
+civitas\backend\governa
+nce\views.py", line 7, 
+in <module>
+    from .models 
+import (
+    ...<3 lines>...
+    )
+ImportError: cannot 
+import name 
+'DirectMessage' from 
+'governance.models' (C:
+\Users\ADMIN\civitas\ba
+ckend\governance\models
+.py)

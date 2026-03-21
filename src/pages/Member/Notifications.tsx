@@ -22,7 +22,7 @@ export function MemberNotifications() {
         try {
             const res = await notificationService.getNotifications();
             setNotifications(res.data);
-        } catch (err) {
+        } catch (err: any) {
             console.error("Failed to fetch notifications", err);
         } finally {
             setLoading(false);
@@ -36,8 +36,8 @@ export function MemberNotifications() {
     const handleMarkAsRead = async (id: string) => {
         try {
             await notificationService.markAsRead(id);
-            setNotifications(prev => prev.map(n => n.id === id ? { ...n, is_read: true } : n));
-        } catch (err) {
+            setNotifications(prev => prev.filter(n => n.id !== id));
+        } catch (err: any) {
             console.error("Failed to mark as read", err);
         }
     };
@@ -45,8 +45,8 @@ export function MemberNotifications() {
     const handleMarkAllAsRead = async () => {
         try {
             await notificationService.markAllAsRead();
-            setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
-        } catch (err) {
+            setNotifications([]);
+        } catch (err: any) {
             console.error("Failed to mark all as read", err);
         }
     };

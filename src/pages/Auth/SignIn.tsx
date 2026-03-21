@@ -3,35 +3,37 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Button } from "../../components/ui/Button";
 import { Input } from "../../components/ui/Input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "../../components/ui/Card";
-import { Loader2, CheckCircle2, ArrowLeft } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useNudge } from "../../components/features/NudgeProvider";
+import { useToast } from "../../components/ui/Toast";
 
 export function SignIn() {
     const navigate = useNavigate();
     const location = useLocation();
     const { signIn } = useAuth();
     const { addNudge } = useNudge();
+    const { showToast } = useToast();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
     useEffect(() => {
         const queryParams = new URLSearchParams(location.search);
         if (queryParams.get('expired') === 'true') {
             setError("Your session has expired. Please sign in again to verify your identity.");
+            showToast("Session expired. Please sign in again.", "warning");
             // Clear URL param without refresh
             window.history.replaceState({}, document.title, window.location.pathname);
         }
 
         if (location.state?.message) {
-            setSuccessMessage(location.state.message);
+            showToast(location.state.message, "success");
             // Clear state so message doesn't persist on refresh
             window.history.replaceState({}, document.title, window.location.pathname);
         }
-    }, [location]);
+    }, [location, showToast]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -40,6 +42,7 @@ export function SignIn() {
 
         try {
             const user = await signIn(username, password);
+            showToast(`Welcome back, ${user.username}! Identity verified.`, "success");
             addNudge(`Identity Verified. Welcome back, ${user.username}.`, "info");
 
             // Navigate based on role
@@ -49,7 +52,9 @@ export function SignIn() {
                 navigate("/member/home");
             }
         } catch (err: any) {
-            setError(err.response?.data?.detail || "Invalid credentials. Identity could not be verified.");
+            const msg = err.response?.data?.detail || "Invalid credentials. Identity could not be verified.";
+            setError(msg);
+            showToast(msg, "error");
         } finally {
             setIsLoading(false);
         }
@@ -74,12 +79,6 @@ export function SignIn() {
                 </CardHeader>
                 <form onSubmit={handleSubmit}>
                     <CardContent className="space-y-6 pt-8 pb-4">
-                        {successMessage && (
-                            <div className="p-4 bg-green-500/10 border border-green-500/30 text-green-500 text-xs font-bold uppercase tracking-widest text-center flex items-center justify-center gap-2">
-                                <CheckCircle2 className="w-4 h-4" />
-                                {successMessage}
-                            </div>
-                        )}
                         {error && (
                             <div className="p-4 bg-red-500/10 border border-red-500/30 text-red-500 text-xs font-bold uppercase tracking-widest italic text-center">
                                 {error}
@@ -114,8 +113,12 @@ export function SignIn() {
                         </div>
                     </CardContent>
                     <CardFooter className="flex flex-col space-y-6 mt-4">
-                        <Button type="submit" className="w-full bg-[#4f8cff] hover:bg-[#4f8cff]/90 text-white font-black uppercase tracking-[0.2em] text-xs h-12 rounded-none" disabled={isLoading}>
-                            {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Sign In"}
+                        <Button
+                            type="submit"
+                            className="w-full bg-[#4f8cff] hover:bg-[#4f8cff]/90 text-white font-black uppercase tracking-[0.2em] text-xs h-12 rounded-none"
+                            isLoading={isLoading}
+                        >
+                            Sign In
                         </Button>
                         <div className="text-[9px] text-center text-[#9aa0a6] uppercase font-bold tracking-[0.2em]">
                             New User?{" "}

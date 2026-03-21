@@ -1,0 +1,11 @@
+﻿src/components/features/AppealsUI.tsx(23,12): error TS6133: 'actions' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(25,12): error TS6133: 'selectedAction' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(25,28): error TS6133: 'setSelectedAction' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(26,12): error TS6133: 'appealReason' is declared but its value is never read.
+src/components/features/AppealsUI.tsx(26,26): error TS6133: 'setAppealReason' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,18): error TS6133: 'ArrowRight' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,30): error TS6133: 'Activity' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,55): error TS6133: 'Users' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,69): error TS6133: 'UserCheck' is declared but its value is never read.
+src/pages/Facilitator/ModerationDashboard.tsx(5,86): error TS6133: 'ShieldCheck' is declared but its value is never read.
+src/pages/Member/DirectMessages.tsx(1,39): error TS1484: 'FormEvent' is a type and must be imported using a type-only import when 'verbatimModuleSyntax' is enabled.
